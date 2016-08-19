@@ -15,28 +15,31 @@
 
     <div class="span4">
       <div class="well">
-      	<h3>Awesome Section</h3>
-      	<p>Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-      	<p>Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec sed odio dui.</p>
+      	<h3>Done</h3>
+      	<p>Login/Logout</p>
+      	<p>Passwort vergessen</p>
+        <p>Access Control List</p>
+        <p>Klassen Model</p>
+        <p>Klassen Controller - Create</p>
       </div>
     </div>
 
     <div class="span4">
-      <h3>Important Stuff</h3>
-      <p>Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-      <p>Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec sed odio dui.</p>
+      <h3>next ToDo</h3>
+      <p>E-Mail ändern</p>
+      <p>Registrieren unterbinden</p>
+      <p>Klassen Controller - Delete</p>
     </div>
 
     <div class="span4">
-      <h3>Example addresses</h3>
+      <h3>Developer</h3>
       <address>
-        <strong>Vokuri, Inc.</strong><br>
-        456 Infinite Loop, Suite 101<br>
-        <abbr title="Phone">P:</abbr> (123) 456-7890
+        <strong>Andreas Müller</strong><br>
+        GitHub Link hier<br>
       </address>
       <address>
-        <strong>Full Name</strong><br>
-        <a href="mailto:#">vokuro@phalconphp.com</a>
+        <strong>E-Mail</strong><br>
+        <a href="mailto:#">andreas.g.mueller@gmx.net</a>
       </address>
     </div>
 

@@ -6,7 +6,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </a>
-        {{ link_to(null, 'class': 'brand', 'Vökuró')}}
+        {{ link_to(null, 'class': 'brand', 'DBGov')}}
         <div class="nav-collapse">
           <ul class="nav">
 
@@ -43,10 +43,7 @@
 </div>
 
 <footer>
-Made with love by the Phalcon Team
+Made with love by the Phalcon Team extended by juic3pow3rs
 
-    {{ link_to("privacy", "Privacy Policy") }}
-    {{ link_to("terms", "Terms") }}
-
-© {{ date("Y") }} Phalcon Team.
+© {{ date("Y") }} Phalcon Team & juic3pow3rs.
 </footer>
