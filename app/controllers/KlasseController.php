@@ -20,24 +20,6 @@ class KlasseController extends ControllerBase
     public function indexAction()
     {
 
-        $connection = new Adapter(get_object_vars($this->config->database));
-        $connection->connect();
-
-        /*
-        $this->createSchuelerSet('testhape', 'testhape' , 3);
-        $this->createSchuelerSet('testanmu', 'testhape' , 3);
-        $this->createSchuelerSet('testjowi', 'testhape' , 3);
-        $this->createSchuelerSet('testfrle', 'testhape' , 3);
-        */
-
-        $name = '9b';
-        $jahr = '16';
-        $rand = $this->randChars();
-
-        $rnd_name = $name.$jahr.$rand;
-
-        echo $rnd_name;
-
         $this->persistent->parameters = null;
 
     }
@@ -143,8 +125,12 @@ class KlasseController extends ControllerBase
         $jahr = $this->request->getPost("jahrgang");
         $anz_usr = $this->request->getPost("anz_usr");
         $anz_db = $this->request->getPost("anz_db");
+
         $rand = $this->randChars();
         $rnd_name = $name.$jahr.$rand;
+
+        $dbs = array();
+        $usr = array();
 
         echo '<pre>';
         echo 'Eindeutiger Name bestehend aus Name, Jahrgang und 3 zufälligen Buchstaben:';
@@ -170,6 +156,10 @@ class KlasseController extends ControllerBase
         $klasse->setListeLehrer("placeholder");
         $klasse->setListeLehrerAno("placeholder");
 
+        $lhr = $rnd_name.'0';
+        $lhrpass = $this->randChars().$this->randChars();
+
+        $this->createLehrer($lhr, $lhrpass);
 
         for ($i = 1; $i <= $anz_usr; $i++) {
 
@@ -178,17 +168,31 @@ class KlasseController extends ControllerBase
             $pw2 = $this->randChars();
             $pw = $pw1.$pw2;
 
-            echo '<pre>';
-            echo 'Name und Passwort des Schülers<br>';
-            print_r($usr_name);
-            echo '<br>';
-            print_r($pw);
-            echo '</pre>';
+            $usr[$i-1] = array($usr_name, $pw);
 
-            $this->createSchuelerSet($usr_name, $pw, $anz_db);
+            $db = $this->createSchuelerSet($usr_name, $pw, $anz_db, $lhr);
+
+            $dbs[$i-1] = $db;
         }
 
+        $this->createGlobalDbs($usr, $lhr);
 
+        echo '<pre>';
+        echo 'Alle Schüler DBs<br>';
+        print_r($dbs);
+        echo '</pre>';
+
+        echo '<pre>';
+        echo 'Alle Schüler<br>';
+        print_r($usr);
+        echo '</pre>';
+
+        echo '<pre>';
+        echo 'Lehrer<br>';
+        print_r($lhr);
+        echo '<br>';
+        print_r($lhrpass);
+        echo '</pre>';
 
         if (!$klasse->save()) {
             foreach ($klasse->getMessages() as $message) {
@@ -292,6 +296,8 @@ class KlasseController extends ControllerBase
             return;
         }
 
+        $name = $klasse->getRndName();
+
         if (!$klasse->delete()) {
 
             foreach ($klasse->getMessages() as $message) {
@@ -306,6 +312,27 @@ class KlasseController extends ControllerBase
             return;
         }
 
+        $connection = new Adapter(get_object_vars($this->config->database));
+        $connection->connect();
+
+        $dbset = $connection->query("SELECT CONCAT('DROP DATABASE `', SCHEMA_NAME, '`;') FROM `information_schema`.`SCHEMATA` WHERE SCHEMA_NAME LIKE ?", array($name.'%'));
+
+        $db = $dbset->fetchAll();
+
+        $userset = $connection->query("SELECT user FROM mysql.user WHERE user like ?", array($name.'%'));
+
+        $user = $userset->fetchAll();
+
+        for ($i = 0; $i < $dbset->numRows(); $i++) {
+            $connection->execute($db[$i][0]);
+            $connection->execute('FLUSH PRIVILEGES');
+        }
+
+        for ($j = 0; $j < $userset->numRows(); $j++) {
+            $connection->execute('DROP USER \''.$user[$j][0].'\'@\'localhost\'');
+            $connection->execute('FLUSH PRIVILEGES');
+        }
+
         $this->flash->success("klasse was deleted successfully");
 
         $this->dispatcher->forward([
@@ -314,7 +341,9 @@ class KlasseController extends ControllerBase
         ]);
     }
 
-    public function createSchuelerSet($name, $pass, $anz) {
+    public function createSchuelerSet($name, $pass, $anz, $lhr) {
+
+        $dbs = array();
 
         $connection = new Adapter(get_object_vars($this->config->database));
         $connection->connect();
@@ -324,7 +353,54 @@ class KlasseController extends ControllerBase
         for ($i = 1; $i <= $anz; $i++) {
 
             $connection->execute('CREATE DATABASE IF NOT EXISTS '.$name.'_'.$i);
-            $connection->execute('GRANT ALL PRIVILEGES ON '.$name.$i.'.* TO \''.$name.'\'@\'localhost\'');
+            $connection->execute('GRANT ALL PRIVILEGES ON '.$name.'_'.$i.'.* TO \''.$name.'\'@\'localhost\'');
+            $connection->execute('GRANT ALL PRIVILEGES ON '.$name.'_'.$i.'.* TO \''.$lhr.'\'@\'localhost\'');
+
+            $dbs[$i-1] = $name.'_'.$i;
+        }
+
+        $connection->execute('FLUSH PRIVILEGES');
+
+        return $dbs;
+
+    }
+
+    public function createLehrer($name, $pass) {
+
+        $connection = new Adapter(get_object_vars($this->config->database));
+        $connection->connect();
+
+        $connection->execute('CREATE USER \''.$name.'\'@\'localhost\' IDENTIFIED BY \''.$pass.'\'');
+
+        $connection->execute('FLUSH PRIVILEGES');
+
+    }
+
+    public function createGlobalDbs($usr, $lhr) {
+        //Hier die globalen DBs erstellen und Schüler R/W auf eine und R auf die andere geben, Lehrer hat bei beiden R/W Rechte
+
+        $anz = count($usr);
+
+        $connection = new Adapter(get_object_vars($this->config->database));
+        $connection->connect();
+
+        //1 = Nur lesen, 2 = Lesen & Schreiben
+        $connection->execute('CREATE DATABASE IF NOT EXISTS '.$lhr.'_1');
+        $connection->execute('CREATE DATABASE IF NOT EXISTS '.$lhr.'_2');
+
+        //Dem Lehrer R&W Rechte auf beide DBs geben
+        $connection->execute('GRANT ALL PRIVILEGES ON '.$lhr.'_1.* TO \''.$lhr.'\'@\'localhost\'');
+        $connection->execute('GRANT ALL PRIVILEGES ON '.$lhr.'_2.* TO \''.$lhr.'\'@\'localhost\'');
+
+        $connection->execute('FLUSH PRIVILEGES');
+
+        for ($i = 0; $i < $anz; $i++) {
+
+            //Dem aktuellen Schüler, R-Rechte auf die 1 geben
+            $connection->execute('GRANT SELECT ON '.$lhr.'_1.* TO \''.$usr[$i][0].'\'@\'localhost\'');
+            //Dem aktuellen Schüler R&W-Rechte auf die 2 geben
+            $connection->execute('GRANT SELECT, INSERT, UPDATE ON '.$lhr.'_2.* TO \''.$usr[$i][0].'\'@\'localhost\'');
+
         }
 
         $connection->execute('FLUSH PRIVILEGES');

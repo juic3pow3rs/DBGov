@@ -18,24 +18,30 @@
       	<h3>Done</h3>
       	<p>Login/Logout</p>
       	<p>Passwort vergessen</p>
-        <p>Access Control List</p>
-        <p>Klassen Model</p>
-        <p>Klassen Controller - Create</p>
+        <p>Klassen Create, Delete, Search & List</p>
       </div>
     </div>
 
     <div class="span4">
       <h3>next ToDo</h3>
+      <p>PDF Creation</p>
+      <p>CSV Upload & Auslesen</p>
       <p>E-Mail ändern</p>
       <p>Registrieren unterbinden</p>
-      <p>Klassen Controller - Delete</p>
+      <p>Klassen Funktion nur eingeloggt aufrufbar</p>
+      <p>Aufforderung bei erstem Login E-Mail & Passwort zu ändern</p>
+      <p>Namenskonventionen Klassennamen</p>
+      <p>Genaue Rechtevergabe globale DBs</p>
+      <p>Help Texte einbauen</p>
+      <p>Kontakt-Seite</p>
+      <p>Linux & MySQL root Zugangsdaten irgendwo einpflegen</p>
     </div>
 
     <div class="span4">
       <h3>Developer</h3>
       <address>
         <strong>Andreas Müller</strong><br>
-        GitHub Link hier<br>
+          <a href="https://github.com/juic3pow3rs/DBGov">Projekt auf GitHub</a><br>
       </address>
       <address>
         <strong>E-Mail</strong><br>
