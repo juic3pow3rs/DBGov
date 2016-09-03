@@ -20,6 +20,7 @@ class KlasseController extends ControllerBase
     public function indexAction()
     {
 
+        //Cronjob zum löschen von dateien, oder direkt von phalcon löschen lassen nach auslesen?
         $this->persistent->parameters = null;
 
     }
@@ -113,6 +114,47 @@ class KlasseController extends ControllerBase
     public function createAction()
     {
         if (!$this->request->isPost()) {
+            $this->dispatcher->forward([
+                'controller' => "klasse",
+                'action' => 'index'
+            ]);
+
+            return;
+        }
+
+        if ($this->request->hasFiles(true)) {
+
+            // Print the real file names and sizes
+            foreach ($this->request->getUploadedFiles() as $file) {
+
+                if ($file->getExtension() != 'csv') {
+
+                    $this->flash->error("Hochgeladene Datei ist keine CSV-Datei!");
+
+                    echo '<pre>';
+                    print_r($file);
+                    echo '</pre>';
+
+                    $this->dispatcher->forward([
+                        'controller' => "klasse",
+                        'action' => 'new'
+                    ]);
+
+                    return;
+
+                } else {
+
+                    $filename = $this->randChars() . $this->randChars() . $file->getName();
+
+                    // Move the file into the application
+                    $file->moveTo('/srv/www/vokuro/cache/temp/' . $filename);
+
+                }
+
+            }
+
+        } else {
+
             $this->dispatcher->forward([
                 'controller' => "klasse",
                 'action' => 'index'

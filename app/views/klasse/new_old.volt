@@ -14,7 +14,7 @@
 
 {{ content() }}
 
-{{ form("klasse/create", "method":"post", "autocomplete" : "off", "class" : "form-horizontal") }}
+{{ form("klasse/create", "method":"post", "autocomplete" : "off", "class" : "form-horizontal", 'enctype': 'multipart/form-data') }}
 
 <div class="form-group">
     <label for="fieldName" class="col-sm-2 control-label">Name</label>
@@ -41,6 +41,13 @@
     <label for="fieldAnzDb" class="col-sm-2 control-label">Anzahl Dbs pro Benutzer</label>
     <div class="col-sm-10">
         {{ text_field("anz_db", "size" : 2, "class" : "form-control", "id" : "fieldAnzDb") }}
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="csvDatei" class="col-sm-2 control-label">CSV Datei der Schüler</label>
+    <div class="col-sm-10">
+        {{ file_field('csv', 'class': 'input-small', 'id' : 'csvDatei') }}
     </div>
 </div>
 

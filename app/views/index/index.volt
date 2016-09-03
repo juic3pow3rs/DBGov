@@ -23,7 +23,7 @@
     </div>
 
     <div class="span4">
-      <h3>next ToDo</h3>
+      <h3>Next ToDo</h3>
       <p>PDF Creation</p>
       <p>CSV Upload & Auslesen</p>
       <p>E-Mail ändern</p>
