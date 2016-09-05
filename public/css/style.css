@@ -46,3 +46,27 @@ table.perms label {
 div.main-container {
 	min-height: 450px;
 }
+
+.has-error .help-block,
+.has-error .control-label,
+.has-error .form-control,
+.has-error .radio,
+.has-error .checkbox,
+.has-error .radio-inline,
+.has-error .checkbox-inline,
+.has-error.radio label,
+.has-error.checkbox label,
+.has-error.radio-inline label,
+.has-error.checkbox-inline label {
+	color: #d3302f;
+}
+
+.col-sm-2.control-label.left {
+	text-align: left;
+}
+
+.anonym {
+	display: inline-block;
+	margin-top: 5px;
+	margin-bottom: 5px !important;
+}

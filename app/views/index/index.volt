@@ -18,19 +18,19 @@
       	<h3>Done</h3>
       	<p>Login/Logout</p>
       	<p>Passwort vergessen</p>
-        <p>Klassen Create, Delete, Search & List</p>
+        <p>Klassen Create, Delete, Search & List (kinda)</p>
+        <p>CSV Upload & Auslesen</p
+        <p>Namenskonventionen Klassennamen</p>
       </div>
     </div>
 
     <div class="span4">
       <h3>Next ToDo</h3>
       <p>PDF Creation</p>
-      <p>CSV Upload & Auslesen</p>
       <p>E-Mail ändern</p>
       <p>Registrieren unterbinden</p>
       <p>Klassen Funktion nur eingeloggt aufrufbar</p>
       <p>Aufforderung bei erstem Login E-Mail & Passwort zu ändern</p>
-      <p>Namenskonventionen Klassennamen</p>
       <p>Genaue Rechtevergabe globale DBs</p>
       <p>Help Texte einbauen</p>
       <p>Kontakt-Seite</p>

@@ -24,16 +24,9 @@ class Klasse extends \Phalcon\Mvc\Model
     /**
      *
      * @var string
-     * @Column(type="string", length=4, nullable=false)
+     * @Column(type="string", length=5, nullable=false)
      */
     protected $jahrgang;
-
-    /**
-     *
-     * @var string
-     * @Column(type="string", length=10, nullable=false)
-     */
-    protected $rnd_name;
 
     /**
      *
@@ -98,19 +91,6 @@ class Klasse extends \Phalcon\Mvc\Model
     public function setJahrgang($jahrgang)
     {
         $this->jahrgang = $jahrgang;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field rnd_name
-     *
-     * @param string $rnd_name
-     * @return $this
-     */
-    public function setRndName($rnd_name)
-    {
-        $this->rnd_name = $rnd_name;
 
         return $this;
     }
@@ -198,16 +178,6 @@ class Klasse extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field rnd_name
-     *
-     * @return string
-     */
-    public function getRndName()
-    {
-        return $this->rnd_name;
-    }
-
-    /**
      * Returns the value of field liste_schueler
      *
      * @return string
@@ -248,6 +218,16 @@ class Klasse extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 'klasse';
+    }
+
+    /**
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
@@ -267,16 +247,6 @@ class Klasse extends \Phalcon\Mvc\Model
     public static function findFirst($parameters = null)
     {
         return parent::findFirst($parameters);
-    }
-
-    /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return 'klasse';
     }
 
 }

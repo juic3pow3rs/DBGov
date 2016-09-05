@@ -33,13 +33,6 @@
 </div>
 
 <div class="form-group">
-    <label for="fieldRndName" class="col-sm-2 control-label">Rnd Of Name</label>
-    <div class="col-sm-10">
-        {{ text_field("rnd_name", "size" : 30, "class" : "form-control", "id" : "fieldRndName") }}
-    </div>
-</div>
-
-<div class="form-group">
     <label for="fieldListeSchueler" class="col-sm-2 control-label">Liste Of Schueler</label>
     <div class="col-sm-10">
         {{ text_field("liste_schueler", "size" : 30, "class" : "form-control", "id" : "fieldListeSchueler") }}

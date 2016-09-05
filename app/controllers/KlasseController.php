@@ -3,6 +3,7 @@ namespace Vokuro\Controllers;
 
 use Phalcon\Mvc\Model\Criteria;
 use Phalcon\Paginator\Adapter\Model as Paginator;
+use Vokuro\Forms\CreateKlasseForm;
 use Vokuro\Models\Klasse;
 use Phalcon\Db\Adapter\Pdo\Mysql as Adapter;
 
@@ -19,8 +20,6 @@ class KlasseController extends ControllerBase
      */
     public function indexAction()
     {
-
-        //Cronjob zum löschen von dateien, oder direkt von phalcon löschen lassen nach auslesen?
         $this->persistent->parameters = null;
 
     }
@@ -71,6 +70,17 @@ class KlasseController extends ControllerBase
     public function newAction()
     {
 
+        if (!empty($this->dispatcher->getParams())) {
+
+            $param = $this->dispatcher->getParams();
+            $form = $param[0];
+            $this->view->form = $form;
+        } else {
+
+            $form = new CreateKlasseForm();
+            $this->view->form = $form;
+        }
+
     }
 
     /**
@@ -111,110 +121,134 @@ class KlasseController extends ControllerBase
     /**
      * Creates a new klasse
      */
-    public function createAction()
-    {
+    /**
+     * @todo: evtl. Filesize-Check einbauen, Inhalt der CSV auf ~50 begrenzen
+     * @todo: Funktion zum PDF-erstellen
+     */
+    public function createAction() {
+
+        $form = new CreateKlasseForm();
+        $this->view->form = $form;
+
         if (!$this->request->isPost()) {
             $this->dispatcher->forward([
                 'controller' => "klasse",
-                'action' => 'index'
+                'action' => 'new'
             ]);
-
             return;
         }
 
-        if ($this->request->hasFiles(true)) {
-
-            // Print the real file names and sizes
-            foreach ($this->request->getUploadedFiles() as $file) {
-
-                if ($file->getExtension() != 'csv') {
-
-                    $this->flash->error("Hochgeladene Datei ist keine CSV-Datei!");
-
-                    echo '<pre>';
-                    print_r($file);
-                    echo '</pre>';
-
-                    $this->dispatcher->forward([
-                        'controller' => "klasse",
-                        'action' => 'new'
-                    ]);
-
-                    return;
-
-                } else {
-
-                    $filename = $this->randChars() . $this->randChars() . $file->getName();
-
-                    // Move the file into the application
-                    $file->moveTo('/srv/www/vokuro/cache/temp/' . $filename);
-
-                }
-
-            }
-
-        } else {
+        if (!$form->isValid($this->request->getPost())) {
 
             $this->dispatcher->forward([
                 'controller' => "klasse",
-                'action' => 'index'
+                'action' => 'new',
+                'params' => array($form)
             ]);
+            return;
 
+        } elseif ($this->request->hasFiles(true) == 0) {
+
+            $this->dispatcher->forward([
+                'controller' => "klasse",
+                'action' => 'new',
+                'params' => array($form)
+            ]);
+            $this->flash->error("Keine CSV Datei hochgeladen!");
             return;
         }
 
         $name = $this->request->getPost("name");
         $jahr = $this->request->getPost("jahrgang");
-        $anz_usr = $this->request->getPost("anz_usr");
-        $anz_db = $this->request->getPost("anz_db");
 
-        $rand = $this->randChars();
-        $rnd_name = $name.$jahr.$rand;
-
-        $dbs = array();
-        $usr = array();
-
-        echo '<pre>';
-        echo 'Eindeutiger Name bestehend aus Name, Jahrgang und 3 zufälligen Buchstaben:';
-        print_r($rnd_name);
-        echo '</pre>';
-
-        if ($this->checkUser($rnd_name) != 0) {
+        if ($this->checkKlasse($name, $jahr) != 0) {
 
             $this->flash->error("Klasse existiert bereits!");
-
             $this->dispatcher->forward([
                 'controller' => "klasse",
                 'action' => 'new'
             ]);
+            return;
         }
+
+        foreach ($this->request->getUploadedFiles() as $file) {
+
+            if ($file->getExtension() != 'csv') {
+
+                $this->dispatcher->forward([
+                    'controller' => "klasse",
+                    'action' => 'new',
+                    'params' => array($form)
+                ]);
+                $this->flash->error("Hochgeladene Datei ist keine CSV Datei!");
+                return;
+
+            } else {
+
+                $filename = $this->randChars() . $this->randChars() . '.' . $file->getExtension();
+                // Move the file into the application
+                $file->moveTo('/srv/www/vokuro/cache/temp/' . $filename);
+            }
+        }
+
+        //@todo Wenn Error Handling eingebaut, abfangen
+        // evtl. in die foreach schleife?
+        $schueler = $this->csvHandler($filename);
+        $anz_usr = count($schueler);
+
+        $anz_db = $this->request->getPost("anzdb");
+        $anonym = $this->request->getPost("anonym");
+
+        $db_jahr = str_replace('/','',$jahr);
+        $db_name = $name . $db_jahr;
+
+        $dbs = array();
+        $usr = array();
+
+        echo count($schueler);
+        echo "<pre>";
+        print_r($schueler);
+        echo "</pre>";
+
+        echo '<pre>';
+        echo 'Checkbox:';
+        print_r($anonym);
+        echo '</pre>';
+
+        echo '<pre>';
+        echo 'Name in der DB:';
+        print_r($db_name);
+        echo '</pre>';
 
         $klasse = new Klasse();
         $klasse->setName($name);
         $klasse->setJahrgang($jahr);
-        $klasse->setRndName($rnd_name);
         $klasse->setListeSchueler("placeholder");
         $klasse->setListeSchuelerAno("placeholder");
         $klasse->setListeLehrer("placeholder");
         $klasse->setListeLehrerAno("placeholder");
 
-        $lhr = $rnd_name.'0';
+        $lhr = $db_name;
         $lhrpass = $this->randChars().$this->randChars();
-
         $this->createLehrer($lhr, $lhrpass);
 
-        for ($i = 1; $i <= $anz_usr; $i++) {
+        for ($i = 0; $i < $anz_usr; $i++) {
 
-            $usr_name = $rnd_name.$i;
+            if ($anonym == 'ja') {
+                $usr_name = $db_name.'usr'.$i;
+            } else {
+                $usr_name = $db_name.$schueler[$i][0].$schueler[$i][1].$i;
+            }
+
             $pw1 = $this->randChars();
             $pw2 = $this->randChars();
             $pw = $pw1.$pw2;
 
-            $usr[$i-1] = array($usr_name, $pw);
+            $usr[$i] = array($usr_name, $pw);
 
             $db = $this->createSchuelerSet($usr_name, $pw, $anz_db, $lhr);
 
-            $dbs[$i-1] = $db;
+            $dbs[$i] = $db;
         }
 
         $this->createGlobalDbs($usr, $lhr);
@@ -237,24 +271,19 @@ class KlasseController extends ControllerBase
         echo '</pre>';
 
         if (!$klasse->save()) {
+
             foreach ($klasse->getMessages() as $message) {
                 $this->flash->error($message);
             }
-
             $this->dispatcher->forward([
                 'controller' => "klasse",
                 'action' => 'new'
             ]);
-
             return;
         }
 
-        $this->flash->success("klasse was created successfully");
+        $this->flash->success("Klasse erfolgreich erstellt");
 
-        /**$this->dispatcher->forward([
-            'controller' => "klasse",
-            'action' => 'index'
-        ]);**/
     }
 
     /**
@@ -263,6 +292,9 @@ class KlasseController extends ControllerBase
      */
     public function saveAction()
     {
+
+        $form = new CreateKlasseForm();
+        $this->view->form = $form;
 
         if (!$this->request->isPost()) {
             $this->dispatcher->forward([
@@ -289,7 +321,6 @@ class KlasseController extends ControllerBase
 
         $klasse->setName($this->request->getPost("name"));
         $klasse->setJahrgang($this->request->getPost("jahrgang"));
-        $klasse->setRndName($this->request->getPost("rnd_name"));
         $klasse->setListeSchueler($this->request->getPost("liste_schueler"));
         $klasse->setListeSchuelerAno($this->request->getPost("liste_schueler_ano"));
         $klasse->setListeLehrer($this->request->getPost("liste_lehrer"));
@@ -338,7 +369,11 @@ class KlasseController extends ControllerBase
             return;
         }
 
-        $name = $klasse->getRndName();
+        $name = $klasse->getName();
+        $jahr = $klasse->getJahrgang();
+        $db_jahr = str_replace('/','',$jahr);
+        $db_name = $name . $db_jahr;
+
 
         if (!$klasse->delete()) {
 
@@ -357,11 +392,11 @@ class KlasseController extends ControllerBase
         $connection = new Adapter(get_object_vars($this->config->database));
         $connection->connect();
 
-        $dbset = $connection->query("SELECT CONCAT('DROP DATABASE `', SCHEMA_NAME, '`;') FROM `information_schema`.`SCHEMATA` WHERE SCHEMA_NAME LIKE ?", array($name.'%'));
+        $dbset = $connection->query("SELECT CONCAT('DROP DATABASE `', SCHEMA_NAME, '`;') FROM `information_schema`.`SCHEMATA` WHERE SCHEMA_NAME LIKE ?", array($db_name.'%'));
 
         $db = $dbset->fetchAll();
 
-        $userset = $connection->query("SELECT user FROM mysql.user WHERE user like ?", array($name.'%'));
+        $userset = $connection->query("SELECT user FROM mysql.user WHERE user like ?", array($db_name.'%'));
 
         $user = $userset->fetchAll();
 
@@ -449,12 +484,12 @@ class KlasseController extends ControllerBase
 
     }
 
-    public function checkUser($name) {
+    public function checkKlasse($name, $jahr) {
 
         $connection = new Adapter(get_object_vars($this->config->database));
         $connection->connect();
 
-        $resultset = $connection->query("SELECT user FROM mysql.user WHERE user like ?", array($name.'%'));
+        $resultset = $connection->query("SELECT * FROM klasse WHERE name = ? AND jahrgang = ?", array($name, $jahr));
 
         if ($resultset->numRows() != 0) {
             return 1;
@@ -468,6 +503,42 @@ class KlasseController extends ControllerBase
 
         $rand = substr(str_shuffle(str_repeat("abcdefghijklmnopqrstuvwxyz", 3)), 0, 3);
         return $rand;
+    }
+
+
+    /**
+     * @param $filename
+     * @return array
+     * @todo Error Handling beim Datei öffnen und auslesen
+     */
+    public function csvHandler($filename) {
+
+        $uml = file_get_contents('/srv/www/vokuro/cache/temp/' . $filename);
+        $uml = iconv('ISO-8859-15', 'UTF-8', $uml);
+        $uml = preg_replace('/[^a-zA-Z0-9;\r\n]/', '', $uml);
+        $uml = strtolower($uml);
+        file_put_contents('/srv/www/vokuro/cache/temp/' . $filename, $uml);
+
+        $i = 0;
+        $schueler = array();
+        $csv = fopen('/srv/www/vokuro/cache/temp/' . $filename, "r");
+        while (($line = fgetcsv($csv, 0, ';')) !== FALSE) {
+            $schueler[$i] = $line;
+            $i++;
+        }
+        fclose($csv);
+        unlink('/srv/www/vokuro/cache/temp/' . $filename);
+
+        for ($j = 0; $j < $i; $j++) {
+            $cnt = count($schueler[$j]);
+            for ($k = 2; $k < $cnt; $k++) {
+                unset($schueler[$j][$k]);
+            }
+            $schueler[$j][0] = substr($schueler[$j][0], 0, 2);
+            $schueler[$j][1] = substr($schueler[$j][1], 0, 2);
+        }
+
+        return $schueler;
     }
 
 }

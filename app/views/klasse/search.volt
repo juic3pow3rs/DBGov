@@ -20,7 +20,6 @@
                 <th>Id</th>
             <th>Name</th>
             <th>Jahrgang</th>
-            <th>Rnd Of Name</th>
             <th>Liste Of Schueler</th>
             <th>Liste Of Schueler Of Ano</th>
             <th>Liste Of Lehrer</th>
@@ -37,7 +36,6 @@
                 <td>{{ klasse.getId() }}</td>
             <td>{{ klasse.getName() }}</td>
             <td>{{ klasse.getJahrgang() }}</td>
-            <td>{{ klasse.getRndName() }}</td>
             <td>{{ klasse.getListeSchueler() }}</td>
             <td>{{ klasse.getListeSchuelerAno() }}</td>
             <td>{{ klasse.getListeLehrer() }}</td>

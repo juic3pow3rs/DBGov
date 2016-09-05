@@ -3,27 +3,31 @@ namespace Vokuro\Forms;
 
 use Phalcon\Forms\Form;
 use Phalcon\Forms\Element\Text;
-use Phalcon\Forms\Element\Submit;
-use Phalcon\Forms\Element\Check;
 use Phalcon\Forms\Element\Hidden;
 use Phalcon\Forms\Element\Numeric;
-use Phalcon\Forms\Element\File;
 use Phalcon\Validation\Validator\PresenceOf;
-use Phalcon\Validation\Validator\Identical;
+use Phalcon\Validation\Validator\Regex;
 
 class CreateKlasseForm extends Form
 {
 
+    /**
+     * @todo: Anzahl der DBs begrenzen
+     */
     public function initialize()
     {
         // Name
         $name = new Text('name', [
-            'placeholder' => 'Name'
+            'placeholder' => 'Name im Format 12d'
         ]);
 
         $name->addValidators([
             new PresenceOf([
                 'message' => 'Bitte Namen angeben!'
+            ]),
+            new Regex([
+                'pattern' => '/([5-9]|1[0-3])[a-z]/',
+                'message' => 'Bitte Name in Form von 12a, 9d, etc. angeben!'
             ])
         ]);
 
@@ -34,53 +38,28 @@ class CreateKlasseForm extends Form
             'placeholder' => 'Jahrgang im Format 16/17'
         ]);
 
-        $jahrgang->addValidator(new PresenceOf([
-            'message' => 'Bitte Jahrgang angeben!'
-        ]));
+        $jahrgang->addValidators([
+            new PresenceOf([
+                'message' => 'Bitte Jahrgang angeben!'
+            ]),
+            new Regex([
+                'pattern' => '/\d\d\/\d\d/',
+                'message' => 'Bitte Jahrgang in Form von 16/17, 17/18 etc. angeben'
+            ])
+        ]);
 
         $this->add($jahrgang);
 
-        // Anzahl Benutzer
-        $anzusr = new Numeric('anzusr', [
-            'placeholder' => 'Anzahl Benutzer'
-        ]);
-
-        $anzusr->addValidator(new PresenceOf([
-            'message' => 'Bitte Anzahl Benutzer angeben!'
-        ]));
-
-        $this->add($anzusr);
-
         // Anzahl DBs pro Benutzer
-        $anzdbs = new Numeric('anzdb', [
-            'placeholder' => 'Anzahl DBs'
+        $anzdb = new Numeric('anzdb', [
+            'placeholder' => 'Anzahl DBs pro Schüler'
         ]);
 
-        $anzdbs->addValidator(new PresenceOf([
+        $anzdb->addValidator(new PresenceOf([
             'message' => 'Bitte Anzahl DBs angeben!'
         ]));
 
-        $this->add($anzdbs);
-
-        // CSV Datei
-        $csvfile = new File('csvfile', [
-            'placeholder' => 'CSV Datei der Schüler'
-        ]);
-
-        $csvfile->addValidator(new PresenceOf([
-            'message' => 'Bitte CSV Datei hochladen!'
-        ]));
-
-        $this->add($csvfile);
-
-        // Remember
-        /**$remember = new Check('remember', [
-            'value' => 'yes'
-        ]);
-
-        $remember->setLabel('Remember me');
-
-        $this->add($remember);**/
+        $this->add($anzdb);
 
         // CSRF
         /**$csrf = new Hidden('csrf');
@@ -94,8 +73,17 @@ class CreateKlasseForm extends Form
 
         $this->add($csrf);**/
 
-        $this->add(new Submit('Speichern', [
+        /**$this->add(new Submit('Speichern', [
             'class' => 'btn btn-success'
-        ]));
+        ]));**/
+    }
+
+    public function messages($name)
+    {
+        if ($this->hasMessagesFor($name)) {
+            foreach ($this->getMessagesFor($name) as $message) {
+                $this->flash->error($message);
+            }
+        }
     }
 }
