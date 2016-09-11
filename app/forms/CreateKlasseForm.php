@@ -13,6 +13,7 @@ class CreateKlasseForm extends Form
 
     /**
      * @todo: Anzahl der DBs begrenzen
+     * @todo: csrf wieder rein
      */
     public function initialize()
     {

@@ -40,21 +40,7 @@ class Klasse extends \Phalcon\Mvc\Model
      * @var string
      * @Column(type="string", length=100, nullable=false)
      */
-    protected $liste_schueler_ano;
-
-    /**
-     *
-     * @var string
-     * @Column(type="string", length=100, nullable=false)
-     */
     protected $liste_lehrer;
-
-    /**
-     *
-     * @var string
-     * @Column(type="string", length=100, nullable=false)
-     */
-    protected $liste_lehrer_ano;
 
     /**
      * Method to set the value of field id
@@ -109,19 +95,6 @@ class Klasse extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field liste_schueler_ano
-     *
-     * @param string $liste_schueler_ano
-     * @return $this
-     */
-    public function setListeSchuelerAno($liste_schueler_ano)
-    {
-        $this->liste_schueler_ano = $liste_schueler_ano;
-
-        return $this;
-    }
-
-    /**
      * Method to set the value of field liste_lehrer
      *
      * @param string $liste_lehrer
@@ -130,19 +103,6 @@ class Klasse extends \Phalcon\Mvc\Model
     public function setListeLehrer($liste_lehrer)
     {
         $this->liste_lehrer = $liste_lehrer;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field liste_lehrer_ano
-     *
-     * @param string $liste_lehrer_ano
-     * @return $this
-     */
-    public function setListeLehrerAno($liste_lehrer_ano)
-    {
-        $this->liste_lehrer_ano = $liste_lehrer_ano;
 
         return $this;
     }
@@ -188,16 +148,6 @@ class Klasse extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field liste_schueler_ano
-     *
-     * @return string
-     */
-    public function getListeSchuelerAno()
-    {
-        return $this->liste_schueler_ano;
-    }
-
-    /**
      * Returns the value of field liste_lehrer
      *
      * @return string
@@ -205,16 +155,6 @@ class Klasse extends \Phalcon\Mvc\Model
     public function getListeLehrer()
     {
         return $this->liste_lehrer;
-    }
-
-    /**
-     * Returns the value of field liste_lehrer_ano
-     *
-     * @return string
-     */
-    public function getListeLehrerAno()
-    {
-        return $this->liste_lehrer_ano;
     }
 
     /**

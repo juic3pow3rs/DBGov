@@ -1,17 +1,10 @@
-Vökuró
+DBGov
 ======
 
-Phalcon is a web framework delivered as a C extension providing high performance and lower resource consumption.
+DBGov is a tool that allows you to mass create MySQL users and databases based of a csv-file with names in it.
 
-This is a sample application for the Phalcon Framework. We expect to implement as many features as possible to showcase the framework and its potential.
+The users are grouped to classes (1 csv-file per class) and you can download the generated usernames and passwords as a pdf file.
 
-Please write us if you have any feedback.
-
-Thanks.
-
-NOTE
-----
-The master branch will always contain the latest stable version. If you wish to check older versions or newer ones currently under development, please switch to the relevant branch.
 
 Get Started
 -----------
@@ -26,7 +19,7 @@ To run this application on your machine, you need at least:
 * Latest Phalcon Framework extension installed/enabled
 * MySQL >= 5.1.5
 
-Then you'll need to create the database and initialize schema:
+Then you'll need to create the database and initialize schema (included):
 
     echo 'CREATE DATABASE vokuro' | mysql -u root
     cat schemas/vokuro.sql | mysql -u root vokuro
@@ -46,10 +39,15 @@ cd vokuro
 php composer.phar install
 ```
 
-Improving this Sample
----------------------
-Phalcon is an open source project and a volunteer effort. Vökuró does not have human resources fully dedicated to the mainteniance of this software. If you want something to be improved or you want a new feature please submit a Pull Request.
+The program uses FPDF for pdf creation, you have to add it manually to the vendor folder. 
+Get it here: http://www.fpdf.org/ and place fpdf.php and fonts folder into /vendor/fpdf. You also have to add the following to the fpdf.php file:
 
+````bash
+namespace Vokuro\fpdf;
+````
+Also make sure you convert the classname in fpdf.php to lower case (class fpdf{...))! 
+
+-------
 License
 -------
-Vökuró is open-sourced software licensed under the New BSD License.
+Vökuró is open-sourced software licensed under the New BSD License. //to be edited

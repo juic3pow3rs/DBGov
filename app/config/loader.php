@@ -11,7 +11,8 @@ $loader->registerNamespaces([
     'Vokuro\Models'      => $config->application->modelsDir,
     'Vokuro\Controllers' => $config->application->controllersDir,
     'Vokuro\Forms'       => $config->application->formsDir,
-    'Vokuro'             => $config->application->libraryDir
+    'Vokuro'             => $config->application->libraryDir,
+    'Vokuro\fpdf'        => '/srv/www/vokuro/vendor/fpdf'
 ]);
 
 $loader->register();

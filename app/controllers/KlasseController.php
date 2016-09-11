@@ -6,6 +6,8 @@ use Phalcon\Paginator\Adapter\Model as Paginator;
 use Vokuro\Forms\CreateKlasseForm;
 use Vokuro\Models\Klasse;
 use Phalcon\Db\Adapter\Pdo\Mysql as Adapter;
+use Vokuro\Models\Pdf;
+use Phalcon\Http\Response;
 
 class KlasseController extends ControllerBase
 {
@@ -21,7 +23,6 @@ class KlasseController extends ControllerBase
     public function indexAction()
     {
         $this->persistent->parameters = null;
-
     }
 
     /**
@@ -111,9 +112,7 @@ class KlasseController extends ControllerBase
             $this->tag->setDefault("jahrgang", $klasse->getJahrgang());
             $this->tag->setDefault("rnd_name", $klasse->getRndName());
             $this->tag->setDefault("liste_schueler", $klasse->getListeSchueler());
-            $this->tag->setDefault("liste_schueler_ano", $klasse->getListeSchuelerAno());
             $this->tag->setDefault("liste_lehrer", $klasse->getListeLehrer());
-            $this->tag->setDefault("liste_lehrer_ano", $klasse->getListeLehrerAno());
             
         }
     }
@@ -124,6 +123,7 @@ class KlasseController extends ControllerBase
     /**
      * @todo: evtl. Filesize-Check einbauen, Inhalt der CSV auf ~50 begrenzen
      * @todo: Funktion zum PDF-erstellen
+     * @todo: Name und Vorname doch nicht strippen, um PDF damit zu erstellen?
      */
     public function createAction() {
 
@@ -223,10 +223,8 @@ class KlasseController extends ControllerBase
         $klasse = new Klasse();
         $klasse->setName($name);
         $klasse->setJahrgang($jahr);
-        $klasse->setListeSchueler("placeholder");
-        $klasse->setListeSchuelerAno("placeholder");
-        $klasse->setListeLehrer("placeholder");
-        $klasse->setListeLehrerAno("placeholder");
+        $klasse->setListeSchueler($db_name.'.pdf');
+        $klasse->setListeLehrer($db_name.'_lehrer.pdf');
 
         $lhr = $db_name;
         $lhrpass = $this->randChars().$this->randChars();
@@ -252,6 +250,14 @@ class KlasseController extends ControllerBase
         }
 
         $this->createGlobalDbs($usr, $lhr);
+
+        $arr[0] = $lhr;
+        $arr[1] = $lhrpass;
+
+        $lhrarr[0] = $arr;
+
+        $this->createSchuelerPdf(0, $db_name, $usr);
+        $this->createrLehrerPdf(0, $db_name, $usr, $lhrarr);
 
         echo '<pre>';
         echo 'Alle Schüler DBs<br>';
@@ -283,6 +289,11 @@ class KlasseController extends ControllerBase
         }
 
         $this->flash->success("Klasse erfolgreich erstellt");
+
+        /**$this->dispatcher->forward([
+        'controller' => "klasse",
+        'action' => 'index'
+        ]);**/
 
     }
 
@@ -322,10 +333,7 @@ class KlasseController extends ControllerBase
         $klasse->setName($this->request->getPost("name"));
         $klasse->setJahrgang($this->request->getPost("jahrgang"));
         $klasse->setListeSchueler($this->request->getPost("liste_schueler"));
-        $klasse->setListeSchuelerAno($this->request->getPost("liste_schueler_ano"));
         $klasse->setListeLehrer($this->request->getPost("liste_lehrer"));
-        $klasse->setListeLehrerAno($this->request->getPost("liste_lehrer_ano"));
-        
 
         if (!$klasse->save()) {
 
@@ -409,6 +417,9 @@ class KlasseController extends ControllerBase
             $connection->execute('DROP USER \''.$user[$j][0].'\'@\'localhost\'');
             $connection->execute('FLUSH PRIVILEGES');
         }
+
+        unlink('/srv/www/vokuro/public/pdf/'.$db_name.'.pdf');
+        unlink('/srv/www/vokuro/public/pdf/'.$db_name.'_lehrer.pdf');
 
         $this->flash->success("klasse was deleted successfully");
 
@@ -515,19 +526,34 @@ class KlasseController extends ControllerBase
 
         $uml = file_get_contents('/srv/www/vokuro/cache/temp/' . $filename);
         $uml = iconv('ISO-8859-15', 'UTF-8', $uml);
-        $uml = preg_replace('/[^a-zA-Z0-9;\r\n]/', '', $uml);
+        $uml = preg_replace('/[^a-zA-Z0-9;,\r\n]/', '', $uml);
         $uml = strtolower($uml);
         file_put_contents('/srv/www/vokuro/cache/temp/' . $filename, $uml);
+
+        $delimiter = $this->detectDelimiter('/srv/www/vokuro/cache/temp/' . $filename);
 
         $i = 0;
         $schueler = array();
         $csv = fopen('/srv/www/vokuro/cache/temp/' . $filename, "r");
-        while (($line = fgetcsv($csv, 0, ';')) !== FALSE) {
+        while (($line = fgetcsv($csv, 0, $delimiter)) !== FALSE) {
             $schueler[$i] = $line;
             $i++;
         }
         fclose($csv);
         unlink('/srv/www/vokuro/cache/temp/' . $filename);
+
+        //Leere Zeilen entferne diese und korrigiere $i
+        for ($j = 0; $j < $i; $j++){
+
+            $schueler[$j] = array_filter($schueler[$j]);
+
+            if (empty($schueler[$j])) {
+                unset($schueler[$j]);
+            }
+        }
+
+        array_filter($schueler);
+        $i = count($schueler);
 
         for ($j = 0; $j < $i; $j++) {
             $cnt = count($schueler[$j]);
@@ -539,6 +565,84 @@ class KlasseController extends ControllerBase
         }
 
         return $schueler;
+    }
+
+    /**
+     * @param $csvFile
+     * @return mixed
+     * Code von: https://coderwall.com/p/qsldcq/php-csv-autodetect-delimiter
+     */
+    public function detectDelimiter($csvFile)
+    {
+        $delimiters = array(
+            ';' => 0,
+            ',' => 0,
+            "\t" => 0,
+            "|" => 0
+        );
+
+        $handle = fopen($csvFile, "r");
+        $firstLine = fgets($handle);
+        fclose($handle);
+        foreach ($delimiters as $delimiter => &$count) {
+            $count = count(str_getcsv($firstLine, $delimiter));
+        }
+
+        return array_search(max($delimiters), $delimiters);
+    }
+
+    public function createSchuelerPdf($ano = 0, $name, $usr) {
+
+        $pdf = new Pdf();
+        // Column headings
+        $header = array('Name', 'Benutzername', 'Passwort');
+        $pdf->AddPage();
+        // Überschrift über der Tabelle
+        $pdf->SetFont('Arial','B',16);
+        $pdf->Cell(40,10,utf8_decode('Zugangsdaten Schüler'));
+        $pdf->Ln();
+        //Hier kommt die Tabelle
+        $pdf->SetFont('Arial','',14);
+        $pdf->BasicTable($header, $usr);
+        $pdf->Output('F', '/srv/www/vokuro/public/pdf/'. $name .'.pdf');
+
+    }
+
+    public function createrLehrerPdf($ano = 0, $name, $usr, $lhr) {
+
+        $pdf = new Pdf();
+        // Column headings
+        $header = array('Name', 'Benutzername', 'Passwort');
+        $pdf->AddPage();
+        //Überschrift über der Tabelle
+        $pdf->SetFont('Arial','B',16);
+        $pdf->Cell(40,10,'Zugangsdaten Lehrer');
+        $pdf->Ln();
+        $pdf->SetFont('Arial','',14);
+        $pdf->BasicTable($header, $lhr);
+        $pdf->Ln();
+        $pdf->SetFont('Arial','B',16);
+        $pdf->Cell(40,10,utf8_decode('Zugangsdaten Schüler'));
+        $pdf->Ln();
+        $pdf->SetFont('Arial','',14);
+        $pdf->BasicTable($header, $usr);
+        $pdf->Output('F', '/srv/www/vokuro/public/pdf/'. $name .'_lehrer.pdf');
+    }
+
+    public function downloadAction($file) {
+
+        $response = new Response();
+        $path = '/srv/www/vokuro/public/pdf/'.$file;
+        $filetype = filetype($path);
+        $filesize = filesize($path);
+        $response->setHeader("Cache-Control", 'must-revalidate, post-check=0, pre-check=0');
+        $response->setHeader("Content-Description", 'File Download');
+        $response->setHeader("Content-Type", $filetype);
+        $response->setHeader("Content-Length", $filesize);
+        $response->setFileToSend($path, str_replace(" ","-",$file), true);
+        $response->send();
+        die();
+
     }
 
 }

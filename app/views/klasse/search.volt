@@ -21,9 +21,7 @@
             <th>Name</th>
             <th>Jahrgang</th>
             <th>Liste Of Schueler</th>
-            <th>Liste Of Schueler Of Ano</th>
             <th>Liste Of Lehrer</th>
-            <th>Liste Of Lehrer Of Ano</th>
 
                 <th></th>
                 <th></th>
@@ -36,10 +34,8 @@
                 <td>{{ klasse.getId() }}</td>
             <td>{{ klasse.getName() }}</td>
             <td>{{ klasse.getJahrgang() }}</td>
-            <td>{{ klasse.getListeSchueler() }}</td>
-            <td>{{ klasse.getListeSchuelerAno() }}</td>
-            <td>{{ klasse.getListeLehrer() }}</td>
-            <td>{{ klasse.getListeLehrerAno() }}</td>
+            <td><a href="/klasse/download/{{ klasse.getListeSchueler() }}">Download</a></td>
+            <td><a href="/klasse/download/{{ klasse.getListeLehrer() }}">Download</a></td>
 
                 <td>{{ link_to("klasse/edit/"~klasse.getId(), "Edit") }}</td>
                 <td>{{ link_to("klasse/delete/"~klasse.getId(), "Delete") }}</td>
