@@ -5,9 +5,9 @@
 		<td style="padding:40px 0  0 0;">
 			<p style="color:#000;font-size: 16px;line-height:24px;font-family:'HelveticaNeue','Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:normal;">
 
-				<h2 style="font-size: 14px;font-family:'HelveticaNeue','Helvetica Neue',Helvetica,Arial,sans-serif;">You're Almost There! Just Confirm Your Email</h2>
+				<h2 style="font-size: 14px;font-family:'HelveticaNeue','Helvetica Neue',Helvetica,Arial,sans-serif;">Fast geschafft! Nur noch deine Email bestätigen.</h2>
 
-				<p style="font-size: 13px;line-height:24px;font-family:'HelveticaNeue','Helvetica Neue',Helvetica,Arial,sans-serif;">You've successfully created a Vökuró account. To activate it, please click below to verify your email address.
+				<p style="font-size: 13px;line-height:24px;font-family:'HelveticaNeue','Helvetica Neue',Helvetica,Arial,sans-serif;">Die hast erfolgreich einen Account bei DBGov erstellt. Um ihn zu aktiveren bitte auf folgenden Link klicken, um deine Email zu bestätigen.
 
 				<br>
 				<br>
@@ -15,7 +15,7 @@
 
 				<br>
 				<br>
-				Vökuró!. Enjoy!
+				DBGov!. Enjoy!
 				<br>
 			</p>
 		</td>

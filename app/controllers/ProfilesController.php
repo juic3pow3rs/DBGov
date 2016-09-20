@@ -19,6 +19,7 @@ class ProfilesController extends ControllerBase
      */
     public function initialize()
     {
+        $this->view->setVar('logged_in', is_array($this->auth->getIdentity()));
         $this->view->setTemplateBefore('private');
     }
 
@@ -52,7 +53,7 @@ class ProfilesController extends ControllerBase
         $profiles = Profiles::find($parameters);
         if (count($profiles) == 0) {
 
-            $this->flash->notice("The search did not find any profiles");
+            $this->flash->notice("Keine Profile gefunden");
 
             return $this->dispatcher->forward([
                 "action" => "index"
@@ -83,7 +84,7 @@ class ProfilesController extends ControllerBase
             if (!$profile->save()) {
                 $this->flash->error($profile->getMessages());
             } else {
-                $this->flash->success("Profile was created successfully");
+                $this->flash->success("Profil erfolgreich erstellt");
             }
 
             Tag::resetInput();
@@ -117,7 +118,7 @@ class ProfilesController extends ControllerBase
             if (!$profile->save()) {
                 $this->flash->error($profile->getMessages());
             } else {
-                $this->flash->success("Profile was updated successfully");
+                $this->flash->success("Profil erfolgreich aktualisiert");
             }
 
             Tag::resetInput();
@@ -140,7 +141,7 @@ class ProfilesController extends ControllerBase
         $profile = Profiles::findFirstById($id);
         if (!$profile) {
 
-            $this->flash->error("Profile was not found");
+            $this->flash->error("Profil nicht gefunden");
 
             return $this->dispatcher->forward([
                 'action' => 'index'
@@ -150,7 +151,7 @@ class ProfilesController extends ControllerBase
         if (!$profile->delete()) {
             $this->flash->error($profile->getMessages());
         } else {
-            $this->flash->success("Profile was deleted");
+            $this->flash->success("Profil erfolgreich gelöscht");
         }
 
         return $this->dispatcher->forward([

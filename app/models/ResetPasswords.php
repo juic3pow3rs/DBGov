@@ -79,7 +79,7 @@ class ResetPasswords extends Model
             ->getMail()
             ->send([
                 $this->user->email => $this->user->name
-            ], "Reset your password", 'reset', [
+            ], "Passwort zurücksetzen", 'reset', [
                 'resetUrl' => '/reset-password/' . $this->code . '/' . $this->user->email
             ]);
     }

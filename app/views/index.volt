@@ -4,6 +4,7 @@
 		<title>Welcome to DBGov</title>
 		<link href="//netdna.bootstrapcdn.com/bootswatch/2.3.1/united/bootstrap.min.css" rel="stylesheet">
 		{{ stylesheet_link('css/style.css') }}
+		{{ stylesheet_link('css/help.css') }}
 	</head>
 	<body>
 

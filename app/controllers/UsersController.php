@@ -18,6 +18,7 @@ class UsersController extends ControllerBase
 
     public function initialize()
     {
+        $this->view->setVar('logged_in', is_array($this->auth->getIdentity()));
         $this->view->setTemplateBefore('private');
     }
 
@@ -50,7 +51,7 @@ class UsersController extends ControllerBase
 
         $users = Users::find($parameters);
         if (count($users) == 0) {
-            $this->flash->notice("The search did not find any users");
+            $this->flash->notice("Keinen Benutzer gefunden");
             return $this->dispatcher->forward([
                 "action" => "index"
             ]);
@@ -82,7 +83,7 @@ class UsersController extends ControllerBase
                 $this->flash->error($user->getMessages());
             } else {
 
-                $this->flash->success("User was created successfully");
+                $this->flash->success("Benutzer erfolgreich erstellt");
 
                 Tag::resetInput();
             }
@@ -98,7 +99,7 @@ class UsersController extends ControllerBase
     {
         $user = Users::findFirstById($id);
         if (!$user) {
-            $this->flash->error("User was not found");
+            $this->flash->error("Benutzer nicht gefunden");
             return $this->dispatcher->forward([
                 'action' => 'index'
             ]);
@@ -119,7 +120,7 @@ class UsersController extends ControllerBase
                 $this->flash->error($user->getMessages());
             } else {
 
-                $this->flash->success("User was updated successfully");
+                $this->flash->success("Benutzer erfolgreich aktualisiert");
 
                 Tag::resetInput();
             }
@@ -141,7 +142,7 @@ class UsersController extends ControllerBase
     {
         $user = Users::findFirstById($id);
         if (!$user) {
-            $this->flash->error("User was not found");
+            $this->flash->error("Benutzer nicht gefunden");
             return $this->dispatcher->forward([
                 'action' => 'index'
             ]);
@@ -150,7 +151,7 @@ class UsersController extends ControllerBase
         if (!$user->delete()) {
             $this->flash->error($user->getMessages());
         } else {
-            $this->flash->success("User was deleted");
+            $this->flash->success("Benutzer erfolgreich gelöscht");
         }
 
         return $this->dispatcher->forward([
@@ -163,7 +164,12 @@ class UsersController extends ControllerBase
      */
     public function changePasswordAction()
     {
-        $form = new ChangePasswordForm();
+        $user = $this->auth->getUser();
+        $form = new ChangePasswordForm($user);
+
+        if ($user->mustChangePassword == 'Y') {
+            $this->flash->notice('Erster Login. Bitte aus Sicherheitsgründen Passwort und E-Mail ändern!');
+        }
 
         if ($this->request->isPost()) {
 
@@ -174,10 +180,11 @@ class UsersController extends ControllerBase
                 }
             } else {
 
-                $user = $this->auth->getUser();
+                //$user = $this->auth->getUser();
 
-                $user->password = $this->security->hash($this->request->getPost('password'));
+                $user->password = $this->security->hash($this->request->getPost('password1'));
                 $user->mustChangePassword = 'N';
+                $user->email = $this->request->getPost('email');
 
                 $passwordChange = new PasswordChanges();
                 $passwordChange->user = $user;
@@ -188,13 +195,18 @@ class UsersController extends ControllerBase
                     $this->flash->error($passwordChange->getMessages());
                 } else {
 
-                    $this->flash->success('Your password was successfully changed');
+                    $this->flash->success('Erfolgreich geändert');
 
                     Tag::resetInput();
                 }
             }
         }
 
+        $this->view->user = $user;
         $this->view->form = $form;
+    }
+
+    public function dataAction() {
+
     }
 }

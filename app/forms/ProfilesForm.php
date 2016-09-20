@@ -27,7 +27,7 @@ class ProfilesForm extends Form
 
         $name->addValidators([
             new PresenceOf([
-                'message' => 'The name is required'
+                'message' => 'Bitte Name angeben'
             ])
         ]);
 

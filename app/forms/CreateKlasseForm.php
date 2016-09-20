@@ -12,7 +12,6 @@ class CreateKlasseForm extends Form
 {
 
     /**
-     * @todo: Anzahl der DBs begrenzen
      * @todo: csrf wieder rein
      */
     public function initialize()
@@ -27,8 +26,8 @@ class CreateKlasseForm extends Form
                 'message' => 'Bitte Namen angeben!'
             ]),
             new Regex([
-                'pattern' => '/([5-9]|1[0-3])[a-z]/',
-                'message' => 'Bitte Name in Form von 12a, 9d, etc. angeben!'
+                'pattern' => '/([5-9]|1[0-3])[a-z]{1,2}/',
+                'message' => 'Bitte Name in Form von 10a, 9d oder 12an (naturwissenschaftlich) angeben!'
             ])
         ]);
 
@@ -53,7 +52,9 @@ class CreateKlasseForm extends Form
 
         // Anzahl DBs pro Benutzer
         $anzdb = new Numeric('anzdb', [
-            'placeholder' => 'Anzahl DBs pro Schüler'
+            'placeholder' => 'Anzahl DBs pro Schüler',
+            'min' => '1',
+            'max' => '3'
         ]);
 
         $anzdb->addValidator(new PresenceOf([

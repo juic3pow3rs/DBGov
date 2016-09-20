@@ -23,10 +23,10 @@ class LoginForm extends Form
 
         $email->addValidators([
             new PresenceOf([
-                'message' => 'The e-mail is required'
+                'message' => 'Bitte Email angeben'
             ]),
             new Email([
-                'message' => 'The e-mail is not valid'
+                'message' => 'Email Formati nicht zulässig'
             ])
         ]);
 
@@ -38,7 +38,7 @@ class LoginForm extends Form
         ]);
 
         $password->addValidator(new PresenceOf([
-            'message' => 'The password is required'
+            'message' => 'Bitte Passwort angeben'
         ]));
 
         $password->clear();
@@ -50,7 +50,7 @@ class LoginForm extends Form
             'value' => 'yes'
         ]);
 
-        $remember->setLabel('Remember me');
+        $remember->setLabel('Eingeloggt bleiben');
 
         $this->add($remember);
 
@@ -59,7 +59,7 @@ class LoginForm extends Form
 
         $csrf->addValidator(new Identical([
             'value' => $this->security->getSessionToken(),
-            'message' => 'CSRF validation failed'
+            'message' => 'CSRF Validierung fehlgeschlagen'
         ]));
 
         $csrf->clear();

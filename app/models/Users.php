@@ -112,7 +112,7 @@ class Users extends Model
             if ($emailConfirmation->save()) {
                 $this->getDI()
                     ->getFlash()
-                    ->notice('A confirmation mail has been sent to ' . $this->email);
+                    ->notice('Eine Bestätigungsmail wurd an ' . $this->email . 'gesendet.');
             }
         }
     }
@@ -125,7 +125,7 @@ class Users extends Model
         $validator = new Validation();
 
         $validator->add('email', new Uniqueness([
-            "message" => "The email is already registered"
+            "message" => "Email wird schon verwendet"
         ]));
 
         return $this->validate($validator);
@@ -141,21 +141,21 @@ class Users extends Model
         $this->hasMany('id', __NAMESPACE__ . '\SuccessLogins', 'usersId', [
             'alias' => 'successLogins',
             'foreignKey' => [
-                'message' => 'User cannot be deleted because he/she has activity in the system'
+                'message' => 'Benutzer kann nicht gelöscht werden, da er/sie aktiv ist'
             ]
         ]);
 
         $this->hasMany('id', __NAMESPACE__ . '\PasswordChanges', 'usersId', [
             'alias' => 'passwordChanges',
             'foreignKey' => [
-                'message' => 'User cannot be deleted because he/she has activity in the system'
+                'message' => 'Benutzer kann nicht gelöscht werden, da er/sie aktiv ist'
             ]
         ]);
 
         $this->hasMany('id', __NAMESPACE__ . '\ResetPasswords', 'usersId', [
             'alias' => 'resetPasswords',
             'foreignKey' => [
-                'message' => 'User cannot be deleted because he/she has activity in the system'
+                'message' => 'Benutzer kann nicht gelöscht werden, da er/sie aktiv ist'
             ]
         ]);
     }

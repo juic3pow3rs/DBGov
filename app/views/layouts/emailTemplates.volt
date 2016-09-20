@@ -8,7 +8,7 @@
 			<tr style="background:#D44413">
 				<td style="padding-left:20px">
 					<a target="_blank" style="text-decoration:none;color:inherit;font-family:'HelveticaNeue','Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:normal;">
-						<h1 style="color:#fff">Vökuró</h1>
+						<h1 style="color:#fff">DBGov</h1>
 					</a>
 				</td>
 			</tr>
@@ -23,14 +23,14 @@
 					<table border="0" cellspacing="0" cellpadding="0" style="padding-bottom:9px;" align="right">
 						<tbody>
 							<tr style="border-bottom:1px solid #999999;">
-								<td width="24" style="padding:0 7px 0 0;">
-									<a href="http://www.facebook.com/pages/Phalcon/134230726685897" style="border-width:0;">
-										<img src="http://{{ publicUrl }}/img/facebook.gif" width="24" height="24" alt="Facebook Image">
+								<td width="32" style="padding:0 7px 0 0;">
+									<a href="http://www.uni-passau.de/" style="border-width:0;">
+										<img src="http://{{ publicUrl }}/img/up.png" width="57" height="32" alt="Uni Passau Logo">
 									</a>
 								</td>
-								<td width="24">
-									<a href="http://twitter.com/phalconphp" style="border-width:0;">
-										<img src="http://{{ publicUrl }}/img/twitter.gif" width="24" height="24" alt="Twitter Image">
+								<td width="32">
+									<a href="https://github.com/juic3pow3rs/DBGov" style="border-width:0;">
+										<img src="http://{{ publicUrl }}/img/github.png" width="32" height="32" alt="Github Logo">
 									</a>
 								</td>
 							</tr>

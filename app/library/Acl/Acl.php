@@ -50,6 +50,20 @@ class Acl extends Component
         ],
         'permissions' => [
             'index'
+        ],
+        'klasse' => [
+            'index',
+            'list',
+            'create',
+            'new',
+            'save',
+            'delete',
+            'confirm',
+            'download'
+        ],
+        'impressum' => [
+            'edit',
+            'editImpressum'
         ]
     ];
 
@@ -59,12 +73,18 @@ class Acl extends Component
      * @var array
      */
     private $actionDescriptions = [
-        'index' => 'Access',
-        'search' => 'Search',
-        'create' => 'Create',
-        'edit' => 'Edit',
-        'delete' => 'Delete',
-        'changePassword' => 'Change password'
+        'index' => 'Zugriff',
+        'search' => 'Suche',
+        'create' => 'Erstellen',
+        'edit' => 'Editieren',
+        'editImpressum' => 'Editieren',
+        'delete' => 'Löschen',
+        'changePassword' => 'Passwort ändern',
+        'new' => 'Neu',
+        'list' => 'Liste',
+        'save' => 'Speichern',
+        'confirm' => 'Bestätigen',
+        'download' => 'Herunterladen'
     ];
 
     /**

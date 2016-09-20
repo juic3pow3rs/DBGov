@@ -14,6 +14,7 @@ class UserControlController extends ControllerBase
     public function initialize()
     {
         if ($this->session->has('auth-identity')) {
+            $this->view->setVar('logged_in', is_array($this->auth->getIdentity()));
             $this->view->setTemplateBefore('private');
         }
     }
@@ -75,7 +76,7 @@ class UserControlController extends ControllerBase
          */
         if ($confirmation->user->mustChangePassword == 'Y') {
 
-            $this->flash->success('The email was successfully confirmed. Now you must change your password');
+            $this->flash->success('TEmail erfolgreich bestätigt. Bitte Passwort ändern');
 
             return $this->dispatcher->forward([
                 'controller' => 'users',
@@ -83,7 +84,7 @@ class UserControlController extends ControllerBase
             ]);
         }
 
-        $this->flash->success('The email was successfully confirmed');
+        $this->flash->success('Email erfolgreich bestätigt');
 
         return $this->dispatcher->forward([
             'controller' => 'users',
@@ -133,7 +134,7 @@ class UserControlController extends ControllerBase
          */
         $this->auth->authUserById($resetPassword->usersId);
 
-        $this->flash->success('Please reset your password');
+        $this->flash->success('Bitte Passwort ändern');
 
         return $this->dispatcher->forward([
             'controller' => 'users',

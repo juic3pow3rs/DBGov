@@ -14,7 +14,8 @@ class KlasseController extends ControllerBase
 
     public function initialize()
     {
-        $this->view->setTemplateBefore('public');
+        $this->view->setVar('logged_in', is_array($this->auth->getIdentity()));
+        $this->view->setTemplateBefore('private');
     }
 
     /**
@@ -28,12 +29,12 @@ class KlasseController extends ControllerBase
     /**
      * Searches for klasse
      */
-    public function searchAction()
+    public function listAction()
     {
         $numberPage = 1;
         if ($this->request->isPost()) {
-            $query = Criteria::fromInput($this->di, '\Vokuro\Models\Klasse', $_POST);
-            $this->persistent->parameters = $query->getParams();
+            //$query = Criteria::fromInput($this->di, '\Vokuro\Models\Klasse', $_POST);
+            //$this->persistent->parameters = $query->getParams();
         } else {
             $numberPage = $this->request->getQuery("page", "int");
         }
@@ -44,14 +45,13 @@ class KlasseController extends ControllerBase
         }
         $parameters["order"] = "id";
 
+        $this->view->cnt = 1;
+
         $klasse = Klasse::find($parameters);
         if (count($klasse) == 0) {
-            $this->flash->notice("The search did not find any klasse");
 
-            $this->dispatcher->forward([
-                "controller" => "klasse",
-                "action" => "index"
-            ]);
+            echo "Keine Klassen vorhanden!";
+            $this->view->cnt = 0;
 
             return;
         }
@@ -63,6 +63,7 @@ class KlasseController extends ControllerBase
         ]);
 
         $this->view->page = $paginator->getPaginate();
+
     }
 
     /**
@@ -95,7 +96,7 @@ class KlasseController extends ControllerBase
 
             $klasse = Klasse::findFirstByid($id);
             if (!$klasse) {
-                $this->flash->error("klasse was not found");
+                $this->flash->error("Klasse nicht gefunden");
 
                 $this->dispatcher->forward([
                     'controller' => "klasse",
@@ -119,11 +120,6 @@ class KlasseController extends ControllerBase
 
     /**
      * Creates a new klasse
-     */
-    /**
-     * @todo: evtl. Filesize-Check einbauen, Inhalt der CSV auf ~50 begrenzen
-     * @todo: Funktion zum PDF-erstellen
-     * @todo: Name und Vorname doch nicht strippen, um PDF damit zu erstellen?
      */
     public function createAction() {
 
@@ -180,7 +176,17 @@ class KlasseController extends ControllerBase
                     'action' => 'new',
                     'params' => array($form)
                 ]);
-                $this->flash->error("Hochgeladene Datei ist keine CSV Datei!");
+                $this->flash->error("Hochgeladene Datei ist keine CSV Datei");
+                return;
+
+            } elseif ($file->getSize() > 100000) {
+
+                $this->dispatcher->forward([
+                    'controller' => "klasse",
+                    'action' => 'new',
+                    'params' => array($form)
+                ]);
+                $this->flash->error("Datei überschreitet maximale Größe von 100kb");
                 return;
 
             } else {
@@ -194,6 +200,27 @@ class KlasseController extends ControllerBase
         //@todo Wenn Error Handling eingebaut, abfangen
         // evtl. in die foreach schleife?
         $schueler = $this->csvHandler($filename);
+
+        if($schueler == 1) {
+            $this->dispatcher->forward([
+                'controller' => "klasse",
+                'action' => 'new',
+                'params' => array($form)
+            ]);
+            $this->flash->error("Mehr als 40 Schüler in der CSV-Datei (Max. 40)");
+            return;
+        }
+
+        if($schueler == 2) {
+            $this->dispatcher->forward([
+                'controller' => "klasse",
+                'action' => 'new',
+                'params' => array($form)
+            ]);
+            $this->flash->error("Leere CSV-Datei angegeben");
+            return;
+        }
+
         $anz_usr = count($schueler);
 
         $anz_db = $this->request->getPost("anzdb");
@@ -204,21 +231,6 @@ class KlasseController extends ControllerBase
 
         $dbs = array();
         $usr = array();
-
-        echo count($schueler);
-        echo "<pre>";
-        print_r($schueler);
-        echo "</pre>";
-
-        echo '<pre>';
-        echo 'Checkbox:';
-        print_r($anonym);
-        echo '</pre>';
-
-        echo '<pre>';
-        echo 'Name in der DB:';
-        print_r($db_name);
-        echo '</pre>';
 
         $klasse = new Klasse();
         $klasse->setName($name);
@@ -256,25 +268,11 @@ class KlasseController extends ControllerBase
 
         $lhrarr[0] = $arr;
 
-        $this->createSchuelerPdf(0, $db_name, $usr);
-        $this->createrLehrerPdf(0, $db_name, $usr, $lhrarr);
+        $pdfheading[0] = $name;
+        $pdfheading[1] = $jahr;
 
-        echo '<pre>';
-        echo 'Alle Schüler DBs<br>';
-        print_r($dbs);
-        echo '</pre>';
-
-        echo '<pre>';
-        echo 'Alle Schüler<br>';
-        print_r($usr);
-        echo '</pre>';
-
-        echo '<pre>';
-        echo 'Lehrer<br>';
-        print_r($lhr);
-        echo '<br>';
-        print_r($lhrpass);
-        echo '</pre>';
+        $this->createSchuelerPdf(0, $pdfheading, $usr);
+        $this->createrLehrerPdf(0, $pdfheading, $usr, $lhrarr);
 
         if (!$klasse->save()) {
 
@@ -290,10 +288,10 @@ class KlasseController extends ControllerBase
 
         $this->flash->success("Klasse erfolgreich erstellt");
 
-        /**$this->dispatcher->forward([
+        $this->dispatcher->forward([
         'controller' => "klasse",
-        'action' => 'index'
-        ]);**/
+        'action' => 'list'
+        ]);
 
     }
 
@@ -320,7 +318,7 @@ class KlasseController extends ControllerBase
         $klasse = Klasse::findFirstByid($id);
 
         if (!$klasse) {
-            $this->flash->error("klasse does not exist " . $id);
+            $this->flash->error("Klasse existiert nicht " . $id);
 
             $this->dispatcher->forward([
                 'controller' => "klasse",
@@ -350,7 +348,7 @@ class KlasseController extends ControllerBase
             return;
         }
 
-        $this->flash->success("klasse was updated successfully");
+        $this->flash->success("Klasse erfolgreich aktualisiert");
 
         $this->dispatcher->forward([
             'controller' => "klasse",
@@ -367,7 +365,7 @@ class KlasseController extends ControllerBase
     {
         $klasse = Klasse::findFirstByid($id);
         if (!$klasse) {
-            $this->flash->error("klasse was not found");
+            $this->flash->error("Klasse nicht gefunden");
 
             $this->dispatcher->forward([
                 'controller' => "klasse",
@@ -421,12 +419,30 @@ class KlasseController extends ControllerBase
         unlink('/srv/www/vokuro/public/pdf/'.$db_name.'.pdf');
         unlink('/srv/www/vokuro/public/pdf/'.$db_name.'_lehrer.pdf');
 
-        $this->flash->success("klasse was deleted successfully");
+        $this->flash->success("Klasse erfolgreich gelöscht");
 
         $this->dispatcher->forward([
             'controller' => "klasse",
-            'action' => "index"
+            'action' => "list"
         ]);
+    }
+
+    public function confirmAction($id) {
+
+        $klasse = Klasse::findFirstByid($id);
+        if (!$klasse) {
+            $this->flash->error("Klasse nicht gefunden");
+
+            $this->dispatcher->forward([
+                'controller' => "klasse",
+                'action' => 'index'
+            ]);
+
+            return;
+        }
+
+        $this->view->klasse = $klasse;
+
     }
 
     public function createSchuelerSet($name, $pass, $anz, $lhr) {
@@ -465,7 +481,6 @@ class KlasseController extends ControllerBase
     }
 
     public function createGlobalDbs($usr, $lhr) {
-        //Hier die globalen DBs erstellen und Schüler R/W auf eine und R auf die andere geben, Lehrer hat bei beiden R/W Rechte
 
         $anz = count($usr);
 
@@ -473,21 +488,21 @@ class KlasseController extends ControllerBase
         $connection->connect();
 
         //1 = Nur lesen, 2 = Lesen & Schreiben
-        $connection->execute('CREATE DATABASE IF NOT EXISTS '.$lhr.'_1');
-        $connection->execute('CREATE DATABASE IF NOT EXISTS '.$lhr.'_2');
+        $connection->execute('CREATE DATABASE IF NOT EXISTS '.$lhr.'_read');
+        $connection->execute('CREATE DATABASE IF NOT EXISTS '.$lhr.'_write');
 
         //Dem Lehrer R&W Rechte auf beide DBs geben
-        $connection->execute('GRANT ALL PRIVILEGES ON '.$lhr.'_1.* TO \''.$lhr.'\'@\'localhost\'');
-        $connection->execute('GRANT ALL PRIVILEGES ON '.$lhr.'_2.* TO \''.$lhr.'\'@\'localhost\'');
+        $connection->execute('GRANT ALL PRIVILEGES ON '.$lhr.'_read.* TO \''.$lhr.'\'@\'localhost\'');
+        $connection->execute('GRANT ALL PRIVILEGES ON '.$lhr.'_write.* TO \''.$lhr.'\'@\'localhost\'');
 
         $connection->execute('FLUSH PRIVILEGES');
 
         for ($i = 0; $i < $anz; $i++) {
 
             //Dem aktuellen Schüler, R-Rechte auf die 1 geben
-            $connection->execute('GRANT SELECT ON '.$lhr.'_1.* TO \''.$usr[$i][0].'\'@\'localhost\'');
+            $connection->execute('GRANT SELECT ON '.$lhr.'_read.* TO \''.$usr[$i][0].'\'@\'localhost\'');
             //Dem aktuellen Schüler R&W-Rechte auf die 2 geben
-            $connection->execute('GRANT SELECT, INSERT, UPDATE ON '.$lhr.'_2.* TO \''.$usr[$i][0].'\'@\'localhost\'');
+            $connection->execute('GRANT SELECT, INSERT, UPDATE ON '.$lhr.'_write.* TO \''.$usr[$i][0].'\'@\'localhost\'');
 
         }
 
@@ -519,7 +534,7 @@ class KlasseController extends ControllerBase
 
     /**
      * @param $filename
-     * @return array
+     * @return mixed
      * @todo Error Handling beim Datei öffnen und auslesen
      */
     public function csvHandler($filename) {
@@ -554,6 +569,16 @@ class KlasseController extends ControllerBase
 
         array_filter($schueler);
         $i = count($schueler);
+
+        if ($i > 40) {
+
+            return 1;
+        }
+
+        if (empty($schueler) == true) {
+
+            return 2;
+        }
 
         for ($j = 0; $j < $i; $j++) {
             $cnt = count($schueler[$j]);
@@ -591,33 +616,54 @@ class KlasseController extends ControllerBase
         return array_search(max($delimiters), $delimiters);
     }
 
-    public function createSchuelerPdf($ano = 0, $name, $usr) {
+    public function createSchuelerPdf($ano = 0, $rawname, $usr) {
+
+        $db_jahr = str_replace('/','',$rawname[1]);
+        $filename = $rawname[0] . $db_jahr;
 
         $pdf = new Pdf();
+
         // Column headings
         $header = array('Name', 'Benutzername', 'Passwort');
+
         $pdf->AddPage();
+        $pdf->SetFont('Arial','B',18);
+        $pdf->Cell(40,10,'Klasse '.$rawname[0].' '.$rawname[1]);
+        $pdf->Ln();
+
         // Überschrift über der Tabelle
         $pdf->SetFont('Arial','B',16);
         $pdf->Cell(40,10,utf8_decode('Zugangsdaten Schüler'));
         $pdf->Ln();
+
         //Hier kommt die Tabelle
         $pdf->SetFont('Arial','',14);
         $pdf->BasicTable($header, $usr);
-        $pdf->Output('F', '/srv/www/vokuro/public/pdf/'. $name .'.pdf');
+        $pdf->Output('F', '/srv/www/vokuro/public/pdf/'. $filename .'.pdf');
 
     }
 
-    public function createrLehrerPdf($ano = 0, $name, $usr, $lhr) {
+    public function createrLehrerPdf($ano = 0, $rawname, $usr, $lhr) {
+
+        $db_jahr = str_replace('/','',$rawname[1]);
+        $filename = $rawname[0] . $db_jahr;
 
         $pdf = new Pdf();
+
         // Column headings
         $header = array('Name', 'Benutzername', 'Passwort');
+
         $pdf->AddPage();
+        $pdf->SetFont('Arial','B',18);
+        $pdf->Cell(40,10,'Klasse '.$rawname[0].' '.$rawname[1]);
+        $pdf->Ln();
+
         //Überschrift über der Tabelle
         $pdf->SetFont('Arial','B',16);
         $pdf->Cell(40,10,'Zugangsdaten Lehrer');
         $pdf->Ln();
+
+        //Tabellen
         $pdf->SetFont('Arial','',14);
         $pdf->BasicTable($header, $lhr);
         $pdf->Ln();
@@ -626,7 +672,7 @@ class KlasseController extends ControllerBase
         $pdf->Ln();
         $pdf->SetFont('Arial','',14);
         $pdf->BasicTable($header, $usr);
-        $pdf->Output('F', '/srv/www/vokuro/public/pdf/'. $name .'_lehrer.pdf');
+        $pdf->Output('F', '/srv/www/vokuro/public/pdf/'. $filename .'_lehrer.pdf');
     }
 
     public function downloadAction($file) {

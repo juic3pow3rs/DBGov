@@ -4,11 +4,16 @@
 
     <div class="center scaffold">
 
-        <h2>Change Password</h2>
+        <h2>Passwort & E-Mail ändern</h2>
 
         <div class="clearfix">
-            <label for="password">Password</label>
-            {{ form.render("password") }}
+            <label for="email">Change Email</label>
+            {{ form.render("email") }}
+        </div>
+
+        <div class="clearfix">
+            <label for="password1">Password</label>
+            {{ form.render("password1") }}
         </div>
 
         <div class="clearfix">
@@ -17,7 +22,7 @@
         </div>
 
         <div class="clearfix">
-            {{ submit_button("Change Password", "class": "btn btn-primary") }}
+            {{ submit_button("Ändern", "class": "btn btn-primary") }}
         </div>
 
     </div>

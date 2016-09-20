@@ -5,7 +5,7 @@
 	{{ form('class': 'form-search') }}
 
 	<div align="left">
-		<h2>Forgot Password?</h2>
+		<h2>Passwort vergessen?</h2>
 	</div>
 
 		{{ form.render('email') }}

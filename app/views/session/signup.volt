@@ -5,7 +5,7 @@
 	{{ form('class': 'form-search') }}
 
 		<div align="left">
-			<h2>Sign Up</h2>
+			<h2>Registrieren</h2>
 		</div>
 
 		<table class="signup">

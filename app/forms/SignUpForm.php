@@ -24,7 +24,7 @@ class SignUpForm extends Form
 
         $name->addValidators([
             new PresenceOf([
-                'message' => 'The name is required'
+                'message' => 'Bitte Name angeben'
             ])
         ]);
 
@@ -37,10 +37,10 @@ class SignUpForm extends Form
 
         $email->addValidators([
             new PresenceOf([
-                'message' => 'The e-mail is required'
+                'message' => 'Bitte Email angeben'
             ]),
             new Email([
-                'message' => 'The e-mail is not valid'
+                'message' => 'Email Format unzulässig'
             ])
         ]);
 
@@ -53,14 +53,14 @@ class SignUpForm extends Form
 
         $password->addValidators([
             new PresenceOf([
-                'message' => 'The password is required'
+                'message' => 'Bitte Passwort angeben'
             ]),
             new StringLength([
                 'min' => 8,
-                'messageMinimum' => 'Password is too short. Minimum 8 characters'
+                'messageMinimum' => 'Passwort zu kurz. Mindestens 8 Zeichen'
             ]),
             new Confirmation([
-                'message' => 'Password doesn\'t match confirmation',
+                'message' => 'Passwörter stimmen nicht überein',
                 'with' => 'confirmPassword'
             ])
         ]);
@@ -74,7 +74,7 @@ class SignUpForm extends Form
 
         $confirmPassword->addValidators([
             new PresenceOf([
-                'message' => 'The confirmation password is required'
+                'message' => 'Bitte Passwort bestätigen'
             ])
         ]);
 
@@ -85,11 +85,11 @@ class SignUpForm extends Form
             'value' => 'yes'
         ]);
 
-        $terms->setLabel('Accept terms and conditions');
+        $terms->setLabel('TOS zustimmen');
 
         $terms->addValidator(new Identical([
             'value' => 'yes',
-            'message' => 'Terms and conditions must be accepted'
+            'message' => 'TOS müssen aktzeptiert werden'
         ]));
 
         $this->add($terms);
@@ -99,7 +99,7 @@ class SignUpForm extends Form
 
         $csrf->addValidator(new Identical([
             'value' => $this->security->getSessionToken(),
-            'message' => 'CSRF validation failed'
+            'message' => 'CSRF Validierung fehlgeschlagen'
         ]));
 
         $csrf->clear();

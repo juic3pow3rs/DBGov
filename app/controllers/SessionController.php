@@ -19,6 +19,7 @@ class SessionController extends ControllerBase
      */
     public function initialize()
     {
+        $this->view->setVar('logged_in', is_array($this->auth->getIdentity()));
         $this->view->setTemplateBefore('public');
     }
 
@@ -87,7 +88,13 @@ class SessionController extends ControllerBase
                         'remember' => $this->request->getPost('remember')
                     ]);
 
-                    return $this->response->redirect('users');
+                    $user = $this->auth->getUser();
+
+                    if ($user->mustChangePassword == 'Y') {
+                        return $this->response->redirect('users/changePassword');
+                    }
+
+                    return $this->response->redirect('klasse');
                 }
             }
         } catch (AuthException $e) {
@@ -114,13 +121,13 @@ class SessionController extends ControllerBase
 
                 $user = Users::findFirstByEmail($this->request->getPost('email'));
                 if (!$user) {
-                    $this->flash->success('There is no account associated to this email');
+                    $this->flash->success('Kein Account mit dieser Email gefunden');
                 } else {
 
                     $resetPassword = new ResetPasswords();
                     $resetPassword->usersId = $user->id;
                     if ($resetPassword->save()) {
-                        $this->flash->success('Success! Please check your messages for an email reset password');
+                        $this->flash->success('Erfolg! Email mit weiteren Instruktionen gesendet');
                     } else {
                         foreach ($resetPassword->getMessages() as $message) {
                             $this->flash->error($message);

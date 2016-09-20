@@ -15,6 +15,7 @@ class PermissionsController extends ControllerBase
      */
     public function indexAction()
     {
+        $this->view->setVar('logged_in', is_array($this->auth->getIdentity()));
         $this->view->setTemplateBefore('private');
 
         if ($this->request->isPost()) {
@@ -42,7 +43,7 @@ class PermissionsController extends ControllerBase
                         $permission->save();
                     }
 
-                    $this->flash->success('Permissions were updated with success');
+                    $this->flash->success('Berechtigungen erfolgreich aktualisiert');
                 }
 
                 // Rebuild the ACL with

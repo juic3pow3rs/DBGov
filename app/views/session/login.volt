@@ -22,7 +22,7 @@
 		<hr>
 
 		<div class="forgot">
-			{{ link_to("session/forgotPassword", "Forgot my password") }}
+			{{ link_to("session/forgotPassword", "Passwort vergessen") }}
 		</div>
 
 	</form>

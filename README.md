@@ -50,4 +50,4 @@ Also make sure you convert the classname in fpdf.php to lower case (class fpdf{.
 -------
 License
 -------
-Vökuró is open-sourced software licensed under the New BSD License. //to be edited
+Vökuró is open-sourced software licensed under the New BSD License.

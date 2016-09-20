@@ -10,29 +10,64 @@
         <div class="nav-collapse">
           <ul class="nav">
 
-            {%- set menus = [
-              'Home': 'index',
-              'About': 'about'
-            ] -%}
-
-            {%- for key, value in menus %}
-              {% if value == dispatcher.getControllerName() %}
-              <li class="active">{{ link_to(value, key) }}</li>
-              {% else %}
-              <li>{{ link_to(value, key) }}</li>
-              {% endif %}
-            {%- endfor -%}
-
-          </ul>
-
-          <ul class="nav pull-right">
-            {%- if not(logged_in is empty) %}
-            <li>{{ link_to('users', 'Users Panel') }}</li>
-            <li>{{ link_to('session/logout', 'Logout') }}</li>
+            {% if dispatcher.getControllerName() == 'index' %}
+                <li class="active">{{ link_to('index', 'Home') }}</li>
             {% else %}
-            <li>{{ link_to('session/login', 'Login') }}</li>
+                <li>{{ link_to('index', 'Home') }}</li>
             {% endif %}
+
+            {%- if not(logged_in is empty) %}
+              {% if dispatcher.getControllerName() == 'klasse' %}
+                  <li class="active dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">Klasse <b class="caret"></b></a>
+                      <ul class="dropdown-menu">
+                          <li>{{ link_to('klasse/new', 'Klasse erstellen') }}</li>
+                          <li>{{ link_to('klasse/list', 'Klassenliste') }}</li>
+                      </ul>
+                  </li>
+              {% else %}
+                  <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">Klasse <b class="caret"></b></a>
+                      <ul class="dropdown-menu">
+                          <li>{{ link_to('klasse/new', 'Klasse erstellen') }}</li>
+                          <li>{{ link_to('klasse/list', 'Klassenliste') }}</li>
+                      </ul>
+                  </li>
+              {% endif %}
+            {% endif %}
+
+            {% if dispatcher.getControllerName() == 'about' %}
+                <li class="active dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>{{ link_to('about/index', 'Über DBGov') }}</li>
+                        <li>{{ link_to('about/faq', 'FAQ') }}</li>
+                    </ul>
+                </li>
+            {% else %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>{{ link_to('about/index', 'Über DBGov') }}</li>
+                        <li>{{ link_to('about/faq', 'FAQ') }}</li>
+                    </ul>
+                </li>
+            {% endif %}
+
           </ul>
+
+            {%- if not(logged_in is empty) %}
+            <ul class="nav pull-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ auth.getName() }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>{{ link_to('users/changePassword', 'Email/Passswort ändern') }}</li>
+                        <li>{{ link_to('impressum/editImpressum', 'Impressum ändern') }}</li>
+                    </ul>
+                </li>
+                <li>{{ link_to('session/logout', 'Logout') }}</li>
+            </ul>
+            {% endif %}
         </div><!-- /.nav-collapse -->
       </div>
     </div><!-- /navbar-inner -->
@@ -43,7 +78,9 @@
 </div>
 
 <footer>
-Made with love by the Phalcon Team extended by juic3pow3rs
-
-© {{ date("Y") }} Phalcon Team & juic3pow3rs.
+    Made with love © {{ date("Y") }} juic3pow3rs.<br>
+    {%- if (logged_in is empty) %}
+        {{ link_to('session/login', 'Login') }}
+    {% endif %}
+    {{ link_to('about/impressum', 'Impressum') }}
 </footer>
