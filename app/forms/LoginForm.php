@@ -34,7 +34,7 @@ class LoginForm extends Form
 
         // Password
         $password = new Password('password', [
-            'placeholder' => 'Password'
+            'placeholder' => 'Passwort'
         ]);
 
         $password->addValidator(new PresenceOf([

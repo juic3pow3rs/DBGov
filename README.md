@@ -21,8 +21,12 @@ To run this application on your machine, you need at least:
 
 Then you'll need to create the database and initialize schema (included):
 
-    echo 'CREATE DATABASE vokuro' | mysql -u root
-    cat schemas/vokuro.sql | mysql -u root vokuro
+    echo 'CREATE DATABASE dbgov' | mysql -u root
+    cat schemas/dbgov.sql | mysql -u root dbgov
+
+You also need to rename the config.php.example file in the app/config folder to config.php and adjust its content to your setup.
+
+The initial login details are stored in the credentials.txt.
 
 Installing Dependencies via Composer
 ------------------------------------
@@ -50,4 +54,4 @@ Also make sure you convert the classname in fpdf.php to lower case (class fpdf{.
 -------
 License
 -------
-Vökuró is open-sourced software licensed under the New BSD License.
+DBGov is open-sourced software licensed under the New BSD License.

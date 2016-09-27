@@ -3,12 +3,12 @@
 use Phalcon\DI\FactoryDefault;
 use Phalcon\Mvc\Application;
 
-ini_set('display_errors', '1');
-ini_set('displaystartuperrors', 1);
-error_reporting(E_ALL);
+//ini_set('display_errors', '1');
+//ini_set('displaystartuperrors', 1);
+//error_reporting(E_ALL);
 
-$debug = new \Phalcon\Debug();
-$debug->listen();
+//$debug = new \Phalcon\Debug();
+//$debug->listen();
 
 /**
  * Define some useful constants

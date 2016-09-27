@@ -243,11 +243,11 @@ class KlasseController extends ControllerBase
         $this->createLehrer($lhr, $lhrpass);
 
         for ($i = 0; $i < $anz_usr; $i++) {
-
+            $nr = $i+1;
             if ($anonym == 'ja') {
-                $usr_name = $db_name.'usr'.$i;
+                $usr_name = $db_name.'usr'.$nr;
             } else {
-                $usr_name = $db_name.$schueler[$i][0].$schueler[$i][1].$i;
+                $usr_name = $db_name.$schueler[$i][0].$schueler[$i][1].$nr;
             }
 
             $pw1 = $this->randChars();
@@ -536,6 +536,7 @@ class KlasseController extends ControllerBase
      * @param $filename
      * @return mixed
      * @todo Error Handling beim Datei öffnen und auslesen
+     * @todo Schüler durchnummerieren und in die PDF eintragen
      */
     public function csvHandler($filename) {
 
@@ -570,16 +571,19 @@ class KlasseController extends ControllerBase
         array_filter($schueler);
         $i = count($schueler);
 
+        //Fehler, wenn die CSV mehr als 40 Schüler beinhaltet
         if ($i > 40) {
 
             return 1;
         }
 
+        //Fehler, wenn die CSV leer ist
         if (empty($schueler) == true) {
 
             return 2;
         }
 
+        // Alle Daten außer Name und Vorname löschen, Name und Vorname jeweils auf die ersten beiden Buchstaben strippen
         for ($j = 0; $j < $i; $j++) {
             $cnt = count($schueler[$j]);
             for ($k = 2; $k < $cnt; $k++) {

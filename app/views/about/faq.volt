@@ -40,6 +40,10 @@
     {
         cursor:pointer;
     }
+
+    .border {
+        border:1px solid #000000 !important;
+    }
 </style>
 
 {{ content() }}
@@ -57,7 +61,7 @@
             <p>Auf der folgenden Seite die E-Mail Adresse eingeben und auf "Send" klicken. An die angegebene E-Mail Adresse werden dann Instruktionen zum Passwort zurücksetzen gesendet:</p>
             <p>{{ link_to('session/forgotPassword', 'Passwort vergessen') }}</p>
             <p>Der Inhalt der E-Mail sieht wie folgt aus:</p>
-            <p><img src="/public/img/resetpw.png"></p>
+            <p><img src="/public/img/resetpw.png" class="border"></p>
             <p>Durch einen Klick auf "Zurücksetzen" kommt man auf die "Passwort & E-Mail ändern" Seite, auf der das Passwort und ggf. die E-Mail Adresse geändert werden kann.</p>
         </div>
     </div>
@@ -80,7 +84,7 @@
             <p>Das Erstellen einer neuen Klasse ist nur eingeloggt möglich!</p>
             <p>Um eine neue Klasse zu erstellen bitte folgenden Link verwenden: {{ link_to('klasse/new', 'Hier Klicken') }} oder über das Menu dorthin navigieren.</p>
             <p>Folgende Eingabemaske wird aufgerufen</p>
-            <p><img src="/public/img/klasse_create_inhalt.png"></p>
+            <p><img src="/public/img/klasse_create_inhalt.png" class="border"></p>
             <p>Die Felder entsprechend ausfüllen und auf "Anlegen" klicken. Bitte Format Vorgaben beachten, genaue angaben in der Kontext-Hilfe (Mauszeiger auf das Fragezeichen).</p>
             <p>Beispiel Schüler-Liste als CSV zur Bearbeitung: <a href="/klasse/download/muster_schuelerliste.csv">Download Muster CSV-Datei</a></p>
             <p>Durch einen Haken im Kästchen "Benutzernamen anonymisieren" werden die Namen der Schüler nicht zum generieren der Benutzernamen verwendet. </p>
@@ -94,9 +98,9 @@
         <div class="panel4">
 
             <p>Um die Daten des Verantwortlichen im Impressum zu ändern bitte folgenden Link verwenden: {{ link_to('impressum/editImpressum', 'Hier Klicken') }} oder über das Menu dorthin navigieren:</p>
-            <p><img src="/public/img/impressum_link.png"></p>
+            <p><img src="/public/img/impressum_link.png" class="border"></p>
             <p>Folgende Eingabemaske wird aufgerufen</p>
-            <p><img src="/public/img/impressum_ändern.png"></p>
+            <p><img src="/public/img/impressum_ändern.png" class="border"></p>
             <p>Die Felder entsprechend ausfüllen und auf "Speichern" klicken. Nach dem Speichern wird man direkt auf das komplette Impressum weitergeleitet.</p>
         </div>
     </div>

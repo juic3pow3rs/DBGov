@@ -6,6 +6,10 @@
     </nav>
 </div>
 
+<div align="right">
+    {{ link_to("/klasse/download/muster_schuelerliste.csv", "<i class='icon-download'></i> Download Muster CSV-Datei", "class": "btn btn-primary") }}
+</div>
+
 <div class="page-header">
     <h1>
         Klasse anlegen
@@ -44,7 +48,7 @@
     <label for="csvfile" class="col-sm-2 control-label left">CSV Datei der Schüler</label>
     <div class="col-sm-10">
         {{ file_field('csv', 'class': 'input-small', 'id' : 'csvfile') }}
-        <div class="help-tip" aria-title="Liste der Schüler als CSV-Datei. Format: wie aus dem Inforportal herunter geladen, falls nicht vorhanden siehe Beispiel CSV-Datei in den FAQs."></div>
+        <div class="help-tip" aria-title="Liste der Schüler als CSV-Datei. Format: wie aus dem Inforportal herunter geladen, falls nicht vorhanden Muster CSV-Datei verwenden"></div>
     </div>
 </div>
 

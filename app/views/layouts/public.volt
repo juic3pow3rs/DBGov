@@ -41,7 +41,9 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>{{ link_to('about/index', 'Über DBGov') }}</li>
-                        <li>{{ link_to('about/faq', 'FAQ') }}</li>
+                        {%- if not(logged_in is empty) %}
+                            <li>{{ link_to('about/faq', 'FAQ') }}</li>
+                        {% endif %}
                     </ul>
                 </li>
             {% else %}
@@ -49,7 +51,9 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>{{ link_to('about/index', 'Über DBGov') }}</li>
-                        <li>{{ link_to('about/faq', 'FAQ') }}</li>
+                        {%- if not(logged_in is empty) %}
+                            <li>{{ link_to('about/faq', 'FAQ') }}</li>
+                        {% endif %}
                     </ul>
                 </li>
             {% endif %}

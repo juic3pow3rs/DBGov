@@ -7,8 +7,3 @@ DirectoryIndex index.html index.php
 	RewriteRule  ^$ public/    [L]
 	RewriteRule  (.*) public/$1 [L]
 </IfModule>
-
-AuthType Basic
-AuthName "Private"
-AuthUserFile /srv/www/vokuro/.htpasswd
-Require valid-user

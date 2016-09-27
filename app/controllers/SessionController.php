@@ -31,6 +31,8 @@ class SessionController extends ControllerBase
     /**
      * Allow a user to signup to the system
      */
+
+    /**
     public function signupAction()
     {
         $form = new SignUpForm();
@@ -59,6 +61,7 @@ class SessionController extends ControllerBase
 
         $this->view->form = $form;
     }
+     * /
 
     /**
      * Starts a session in the admin backend

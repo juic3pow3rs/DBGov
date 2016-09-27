@@ -17,7 +17,7 @@
                 <th>Name</th>
                 <th>Jahrgang</th>
                 <th>PDF Zugangsdaten Schüler</th>
-                <th>PDF Zugansdaten Lehrer & Schüler</th>
+                <th>PDF Zugangsdaten Lehrer & Schüler</th>
                 <th></th>
             </tr>
         </thead>
@@ -46,10 +46,10 @@
     <div class="col-sm-11">
         <nav>
             <ul class="pagination">
-                <li>{{ link_to("klasse/search", "Erste") }}</li>
-                <li>{{ link_to("klasse/search?page="~page.before, "Vorherige") }}</li>
-                <li>{{ link_to("klasse/search?page="~page.next, "Nächste") }}</li>
-                <li>{{ link_to("klasse/search?page="~page.last, "Letzte") }}</li>
+                <li>{{ link_to("klasse/list", "Erste") }}</li>
+                <li>{{ link_to("klasse/list?page="~page.before, "Vorherige") }}</li>
+                <li>{{ link_to("klasse/list?page="~page.next, "Nächste") }}</li>
+                <li>{{ link_to("klasse/list?page="~page.last, "Letzte") }}</li>
             </ul>
         </nav>
     </div>
