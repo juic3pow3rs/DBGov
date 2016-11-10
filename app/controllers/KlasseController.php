@@ -456,9 +456,9 @@ class KlasseController extends ControllerBase
 
         for ($i = 1; $i <= $anz; $i++) {
 
-            $connection->execute('CREATE DATABASE IF NOT EXISTS '.$name.'_'.$i);
-            $connection->execute('GRANT ALL PRIVILEGES ON '.$name.'_'.$i.'.* TO \''.$name.'\'@\'localhost\'');
-            $connection->execute('GRANT ALL PRIVILEGES ON '.$name.'_'.$i.'.* TO \''.$lhr.'\'@\'localhost\'');
+            $connection->execute('CREATE DATABASE IF NOT EXISTS `'.$name.'_'.$i.'`');
+            $connection->execute('GRANT ALL PRIVILEGES ON `'.$name.'_'.$i.'`.* TO \''.$name.'\'@\'localhost\'');
+            $connection->execute('GRANT ALL PRIVILEGES ON `'.$name.'_'.$i.'`.* TO \''.$lhr.'\'@\'localhost\'');
 
             $dbs[$i-1] = $name.'_'.$i;
         }
@@ -488,21 +488,21 @@ class KlasseController extends ControllerBase
         $connection->connect();
 
         //1 = Nur lesen, 2 = Lesen & Schreiben
-        $connection->execute('CREATE DATABASE IF NOT EXISTS '.$lhr.'_read');
-        $connection->execute('CREATE DATABASE IF NOT EXISTS '.$lhr.'_write');
+        $connection->execute('CREATE DATABASE IF NOT EXISTS `'.$lhr.'_read`');
+        $connection->execute('CREATE DATABASE IF NOT EXISTS `'.$lhr.'_write`');
 
         //Dem Lehrer R&W Rechte auf beide DBs geben
-        $connection->execute('GRANT ALL PRIVILEGES ON '.$lhr.'_read.* TO \''.$lhr.'\'@\'localhost\'');
-        $connection->execute('GRANT ALL PRIVILEGES ON '.$lhr.'_write.* TO \''.$lhr.'\'@\'localhost\'');
+        $connection->execute('GRANT ALL PRIVILEGES ON `'.$lhr.'_read`.* TO \''.$lhr.'\'@\'localhost\'');
+        $connection->execute('GRANT ALL PRIVILEGES ON `'.$lhr.'_write`.* TO \''.$lhr.'\'@\'localhost\'');
 
         $connection->execute('FLUSH PRIVILEGES');
 
         for ($i = 0; $i < $anz; $i++) {
 
             //Dem aktuellen Schüler, R-Rechte auf die 1 geben
-            $connection->execute('GRANT SELECT ON '.$lhr.'_read.* TO \''.$usr[$i][0].'\'@\'localhost\'');
+            $connection->execute('GRANT SELECT ON `'.$lhr.'_read`.* TO \''.$usr[$i][0].'\'@\'localhost\'');
             //Dem aktuellen Schüler R&W-Rechte auf die 2 geben
-            $connection->execute('GRANT SELECT, INSERT, UPDATE ON '.$lhr.'_write.* TO \''.$usr[$i][0].'\'@\'localhost\'');
+            $connection->execute('GRANT SELECT, INSERT, UPDATE ON `'.$lhr.'_write`.* TO \''.$usr[$i][0].'\'@\'localhost\'');
 
         }
 
