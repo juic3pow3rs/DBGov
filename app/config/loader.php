@@ -12,7 +12,7 @@ $loader->registerNamespaces([
     'Vokuro\Controllers' => $config->application->controllersDir,
     'Vokuro\Forms'       => $config->application->formsDir,
     'Vokuro'             => $config->application->libraryDir,
-    'Vokuro\fpdf'        => '/srv/www/vokuro/vendor/fpdf'
+    'Vokuro\fpdf'        => $_SERVER['APACHE_DOCUMENT_ROOT'].'/vendor/fpdf'
 ]);
 
 $loader->register();

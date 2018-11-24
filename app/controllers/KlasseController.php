@@ -114,7 +114,7 @@ class KlasseController extends ControllerBase
             $this->tag->setDefault("rnd_name", $klasse->getRndName());
             $this->tag->setDefault("liste_schueler", $klasse->getListeSchueler());
             $this->tag->setDefault("liste_lehrer", $klasse->getListeLehrer());
-            
+
         }
     }
 
@@ -193,7 +193,7 @@ class KlasseController extends ControllerBase
 
                 $filename = $this->randChars() . $this->randChars() . '.' . $file->getExtension();
                 // Move the file into the application
-                $file->moveTo('/srv/www/vokuro/cache/temp/' . $filename);
+                $file->moveTo($_SERVER['APACHE_DOCUMENT_ROOT'].'/cache/temp/' . $filename);
             }
         }
 
@@ -289,8 +289,8 @@ class KlasseController extends ControllerBase
         $this->flash->success("Klasse erfolgreich erstellt");
 
         $this->dispatcher->forward([
-        'controller' => "klasse",
-        'action' => 'list'
+            'controller' => "klasse",
+            'action' => 'list'
         ]);
 
     }
@@ -416,8 +416,8 @@ class KlasseController extends ControllerBase
             $connection->execute('FLUSH PRIVILEGES');
         }
 
-        unlink('/srv/www/vokuro/public/pdf/'.$db_name.'.pdf');
-        unlink('/srv/www/vokuro/public/pdf/'.$db_name.'_lehrer.pdf');
+        unlink($_SERVER['APACHE_DOCUMENT_ROOT'].'/public/pdf/'.$db_name.'.pdf');
+        unlink($_SERVER['APACHE_DOCUMENT_ROOT'].'/public/pdf/'.$db_name.'_lehrer.pdf');
 
         $this->flash->success("Klasse erfolgreich gelöscht");
 
@@ -540,23 +540,23 @@ class KlasseController extends ControllerBase
      */
     public function csvHandler($filename) {
 
-        $uml = file_get_contents('/srv/www/vokuro/cache/temp/' . $filename);
+        $uml = file_get_contents($_SERVER['APACHE_DOCUMENT_ROOT'].'/cache/temp/' . $filename);
         $uml = iconv('ISO-8859-15', 'UTF-8', $uml);
         $uml = preg_replace('/[^a-zA-Z0-9;,\r\n]/', '', $uml);
         $uml = strtolower($uml);
-        file_put_contents('/srv/www/vokuro/cache/temp/' . $filename, $uml);
+        file_put_contents($_SERVER['APACHE_DOCUMENT_ROOT'].'/cache/temp/' . $filename, $uml);
 
-        $delimiter = $this->detectDelimiter('/srv/www/vokuro/cache/temp/' . $filename);
+        $delimiter = $this->detectDelimiter($_SERVER['APACHE_DOCUMENT_ROOT'].'/cache/temp/' . $filename);
 
         $i = 0;
         $schueler = array();
-        $csv = fopen('/srv/www/vokuro/cache/temp/' . $filename, "r");
+        $csv = fopen($_SERVER['APACHE_DOCUMENT_ROOT'].'/cache/temp/' . $filename, "r");
         while (($line = fgetcsv($csv, 0, $delimiter)) !== FALSE) {
             $schueler[$i] = $line;
             $i++;
         }
         fclose($csv);
-        unlink('/srv/www/vokuro/cache/temp/' . $filename);
+        unlink($_SERVER['APACHE_DOCUMENT_ROOT'].'/cache/temp/' . $filename);
 
         //Leere Zeilen entferne diese und korrigiere $i
         for ($j = 0; $j < $i; $j++){
@@ -643,7 +643,7 @@ class KlasseController extends ControllerBase
         //Hier kommt die Tabelle
         $pdf->SetFont('Arial','',14);
         $pdf->BasicTable($header, $usr);
-        $pdf->Output('F', '/srv/www/vokuro/public/pdf/'. $filename .'.pdf');
+        $pdf->Output('F', $_SERVER['APACHE_DOCUMENT_ROOT'].'/public/pdf/'. $filename .'.pdf');
 
     }
 
@@ -676,13 +676,13 @@ class KlasseController extends ControllerBase
         $pdf->Ln();
         $pdf->SetFont('Arial','',14);
         $pdf->BasicTable($header, $usr);
-        $pdf->Output('F', '/srv/www/vokuro/public/pdf/'. $filename .'_lehrer.pdf');
+        $pdf->Output('F', $_SERVER['APACHE_DOCUMENT_ROOT'].'/public/pdf/'. $filename .'_lehrer.pdf');
     }
 
     public function downloadAction($file) {
 
         $response = new Response();
-        $path = '/srv/www/vokuro/public/pdf/'.$file;
+        $path = $_SERVER['APACHE_DOCUMENT_ROOT'].'/public/pdf/'.$file;
         $filetype = filetype($path);
         $filesize = filesize($path);
         $response->setHeader("Cache-Control", 'must-revalidate, post-check=0, pre-check=0');

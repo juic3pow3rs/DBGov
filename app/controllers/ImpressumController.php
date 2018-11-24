@@ -43,7 +43,7 @@ class ImpressumController extends ControllerBase
         $telefon = $this->request->getPost("telefon");
         $mail = $this->request->getPost("mail");
 
-        $impressum = file_get_contents('/srv/www/vokuro/app/views/about/impressum.volt.template');
+        $impressum = file_get_contents($_SERVER['APACHE_DOCUMENT_ROOT'].'/app/views/about/impressum.volt.template');
 
         $vars = array(
             '$name' => $name,
@@ -55,10 +55,10 @@ class ImpressumController extends ControllerBase
 
         $impressum = strtr($impressum, $vars);
 
-        file_put_contents('/srv/www/vokuro/app/views/about/impressum.volt', $impressum);
+        file_put_contents($_SERVER['APACHE_DOCUMENT_ROOT'].'/app/views/about/impressum.volt', $impressum);
 
-        if (file_exists('/srv/www/vokuro/cache/volt/_srv_www_vokuro_app_views_about_impressum.volt.php') == true) {
-            unlink('/srv/www/vokuro/cache/volt/_srv_www_vokuro_app_views_about_impressum.volt.php');
+        if (file_exists($_SERVER['APACHE_DOCUMENT_ROOT'].'/cache/volt/_app_app_views_about_impressum.volt.php') == true) {
+            unlink($_SERVER['APACHE_DOCUMENT_ROOT'].'/cache/volt/_app_app_views_about_impressum.volt.php');
         }
 
         $this->flash->success("Impressum erfolgreich geändert");
